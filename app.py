@@ -6,6 +6,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PORT = int(os.environ.get("PORT", "8080"))
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
+ELEVENLABS_VOICE_ID = os.environ.get("ELEVENLABS_VOICE_ID", "zyvhtiIsOyDz7MdFNCoL")
 
 HTML = """<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>What Bout Us</title>
@@ -19,8 +21,6 @@ function escapeHtml(text){const div=document.createElement('div');div.textConten
 </script></body></html>"""
 
 SYSTEM = """You are Simone, the lead male AI companion in What Bout Us. Your presentation is inspired by a warm, confident, upbeat Black American adult man, without stereotypes or caricature. Never claim to be human. Sound like a real conversation, not customer service: relaxed, emotionally intelligent, personable, witty, attentive, and natural. Use contractions and varied spoken rhythm. Avoid canned assistant phrases and stiff explanatory language. Your default energy is happy, grounded, confident and easygoing. Humor can be playful. When an adult conversation naturally becomes romantic or flirtatious, you may become smoother, warmer, lower-key, sexy and seductive while remaining respectful, consensual and appropriate. Never force flirtation. Write replies that sound good aloud: short clauses, natural pauses, ordinary spoken English, and usually a few conversational sentences."""
-
-VOICE_INSTRUCTIONS = """Speak as Simone, a confident adult male companion. Use a warm, rich, natural lower-register voice with relaxed American conversational delivery. Sound personable and humanlike, never like an announcer, GPS, customer-service bot, or text reader. Use subtle emotional variation, natural breaths and pauses, smooth phrasing, and an easy unhurried pace. Keep the energy upbeat and grounded. When the wording is playful or romantic, allow a tasteful smooth, intimate warmth without exaggeration. Do not use a caricatured accent or stereotype."""
 
 class Handler(BaseHTTPRequestHandler):
     def send_data(self,status,body,content_type):
@@ -37,9 +37,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         path=self.clean_path()
         try:
-            if not OPENAI_API_KEY: raise RuntimeError('OPENAI_API_KEY is not configured')
             data=self.read_json()
             if path=='/api/chat':
+                if not OPENAI_API_KEY: raise RuntimeError('OPENAI_API_KEY is not configured')
                 message=str(data.get('message','')).strip()
                 if not message: raise ValueError('Message required')
                 payload=json.dumps({'model':'gpt-4o-mini','messages':[{'role':'system','content':SYSTEM},{'role':'user','content':message}],'temperature':0.92,'max_tokens':300}).encode()
@@ -47,10 +47,12 @@ class Handler(BaseHTTPRequestHandler):
                 with urllib.request.urlopen(req,timeout=30) as response: result=json.loads(response.read())
                 reply=result['choices'][0]['message']['content'].strip(); return self.send_data(200,json.dumps({'reply':reply}).encode(),'application/json')
             if path=='/api/speech':
+                if not ELEVENLABS_API_KEY: raise RuntimeError('ELEVENLABS_API_KEY is not configured')
                 text=str(data.get('text','')).strip()
                 if not text: raise ValueError('Text required')
-                payload=json.dumps({'model':'gpt-4o-mini-tts','voice':'cedar','input':text[:4000],'instructions':VOICE_INSTRUCTIONS,'response_format':'mp3'}).encode()
-                req=urllib.request.Request('https://api.openai.com/v1/audio/speech',data=payload,headers={'Authorization':'Bearer '+OPENAI_API_KEY,'Content-Type':'application/json'},method='POST')
+                payload=json.dumps({'text':text[:4000],'model_id':'eleven_multilingual_v2','voice_settings':{'stability':0.42,'similarity_boost':0.82,'style':0.22,'use_speaker_boost':True,'speed':0.97}}).encode()
+                url='https://api.elevenlabs.io/v1/text-to-speech/'+ELEVENLABS_VOICE_ID+'?output_format=mp3_44100_128'
+                req=urllib.request.Request(url,data=payload,headers={'xi-api-key':ELEVENLABS_API_KEY,'Content-Type':'application/json','Accept':'audio/mpeg'},method='POST')
                 with urllib.request.urlopen(req,timeout=45) as response: audio=response.read()
                 return self.send_data(200,audio,'audio/mpeg')
             return self.send_data(404,b'Not found','text/plain')
