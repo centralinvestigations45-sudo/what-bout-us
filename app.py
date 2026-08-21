@@ -1,6 +1,7 @@
 import json
 import os
 import urllib.request
+import urllib.error
 from urllib.parse import urlsplit
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -15,7 +16,7 @@ HTML = """<!doctype html>
 <body><div class="wrap"><div class="brand">WHAT BOUT US</div><div class="card"><h1>Simone</h1><div class="bubble">Hey U, I'm Simone. Tell me what you're thinking.</div><div id="history"></div><div class="row"><input id="message" placeholder="Talk to Simone..."><button onclick="sendMessage()">Send</button></div><div id="status" class="status">Ready</div></div></div>
 <script>
 let currentAudio=null;
-async function speakReply(text){try{if(currentAudio){currentAudio.pause();currentAudio=null}const r=await fetch('/api/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});if(!r.ok)throw new Error('voice unavailable');const blob=await r.blob();const url=URL.createObjectURL(blob);currentAudio=new Audio(url);currentAudio.onended=()=>URL.revokeObjectURL(url);await currentAudio.play()}catch(e){console.log('Speech error',e)}}
+async function speakReply(text){try{if(currentAudio){currentAudio.pause();currentAudio=null}const r=await fetch('/api/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});if(!r.ok){const e=await r.text();throw new Error(e||'voice unavailable')}const blob=await r.blob();const url=URL.createObjectURL(blob);currentAudio=new Audio(url);currentAudio.onended=()=>URL.revokeObjectURL(url);await currentAudio.play()}catch(e){console.log('Speech error',e)}}
 async function sendMessage(){const input=document.getElementById('message'),history=document.getElementById('history'),status=document.getElementById('status'),message=input.value.trim();if(!message)return;input.value='';history.innerHTML+='<div class="bubble you">You: '+escapeHtml(message)+'</div>';status.textContent='Simone is thinking...';try{const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Connection error');history.innerHTML+='<div class="bubble">Simone: '+escapeHtml(data.reply)+'</div>';status.textContent='Ready';speakReply(data.reply)}catch(error){history.innerHTML+='<div class="bubble">Simone: I am having trouble connecting right now.</div>';status.textContent=error.message}}
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}document.getElementById('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});
 </script></body></html>"""
@@ -53,10 +54,16 @@ class Handler(BaseHTTPRequestHandler):
                 payload=json.dumps({'text':text[:4000],'model_id':'eleven_multilingual_v2','voice_settings':{'stability':0.42,'similarity_boost':0.82,'style':0.22,'use_speaker_boost':True,'speed':0.97}}).encode()
                 url='https://api.elevenlabs.io/v1/text-to-speech/'+ELEVENLABS_VOICE_ID+'?output_format=mp3_44100_128'
                 req=urllib.request.Request(url,data=payload,headers={'xi-api-key':ELEVENLABS_API_KEY,'Content-Type':'application/json','Accept':'audio/mpeg'},method='POST')
-                with urllib.request.urlopen(req,timeout=45) as response: audio=response.read()
+                try:
+                    with urllib.request.urlopen(req,timeout=45) as response: audio=response.read()
+                except urllib.error.HTTPError as e:
+                    detail=e.read().decode('utf-8','replace')
+                    print('ELEVENLABS ERROR',e.code,detail,flush=True)
+                    return self.send_data(502,json.dumps({'error':'ElevenLabs request failed','status':e.code,'detail':detail}).encode(),'application/json')
                 return self.send_data(200,audio,'audio/mpeg')
             return self.send_data(404,b'Not found','text/plain')
         except Exception as error:
+            print('APP ERROR',repr(error),flush=True)
             return self.send_data(500,json.dumps({'error':str(error)}).encode(),'application/json')
     def log_message(self,format,*args): print(format % args,flush=True)
 
