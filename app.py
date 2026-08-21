@@ -51,8 +51,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not ELEVENLABS_API_KEY: raise RuntimeError('ELEVENLABS_API_KEY is not configured')
                 text=str(data.get('text','')).strip()
                 if not text: raise ValueError('Text required')
-                payload=json.dumps({'text':text[:4000],'model_id':'eleven_multilingual_v2','voice_settings':{'stability':0.42,'similarity_boost':0.82,'style':0.22,'use_speaker_boost':True,'speed':0.97}}).encode()
-                url='https://api.elevenlabs.io/v1/text-to-speech/'+ELEVENLABS_VOICE_ID+'?output_format=mp3_44100_128'
+                payload=json.dumps({'text':text[:4000],'model_id':'eleven_multilingual_v2','voice_settings':{'stability':0.42,'similarity_boost':0.82,'style':0.22,'use_speaker_boost':True}}).encode()
+                url='https://api.elevenlabs.io/v1/text-to-speech/'+ELEVENLABS_VOICE_ID
                 req=urllib.request.Request(url,data=payload,headers={'xi-api-key':ELEVENLABS_API_KEY,'Content-Type':'application/json','Accept':'audio/mpeg'},method='POST')
                 try:
                     with urllib.request.urlopen(req,timeout=45) as response: audio=response.read()
