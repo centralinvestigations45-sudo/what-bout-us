@@ -3,7 +3,7 @@ from urllib.parse import urlparse, parse_qs, unquote, quote
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PORT=int(os.environ.get('PORT','8080')); OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY',''); ELEVENLABS_API_KEY=os.environ.get('ELEVENLABS_API_KEY',''); ELEVENLABS_VOICE_ID=os.environ.get('ELEVENLABS_VOICE_ID','zyvhtiIsOyDz7MdFNCoL').strip(); SQUARE_PLUS_URL=os.environ.get('SQUARE_PLUS_URL','').strip(); SQUARE_UNLIMITED_URL=os.environ.get('SQUARE_UNLIMITED_URL','').strip()
-MEN=['Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Ace','Noah','Jack','Benji','Leo','Carter','Tyler','Simone']; WOMEN=['Lily','Aria','Mika','Zoey','Nova','Sophia','Isabella','Chloe','Ember','Hana','Riley','Vivien','Bella','Sahara','Skye','Nia']; ALL=MEN+WOMEN
+MEN=['Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Darius','Noah','Jack','Julius','Leo','Carter','Tyler','Simone']; WOMEN=['Lily','Aria','Mika','Zoey','Nova','Sophia','Isabella','Chloe','Ember','Hana','Riley','Vivien','Bella','Sahara','Skye','Nia']; ALL=MEN+WOMEN
 TRAITS={'Simone':'funny, compassionate, considerate, business-minded, intelligent, street-smart, romantic, ambitious, spontaneous, courteous, distinguished, kind, bold, adventurous and protective'}
 def esc(s): return html.escape(str(s),quote=True)
 def portrait(name):
