@@ -10,6 +10,7 @@ COPY run_analytics.py /app/run_analytics.py
 COPY run_idle.py /app/run_idle.py
 COPY run_pricing.py /app/run_pricing.py
 COPY run_wallet.py /app/run_wallet.py
+COPY run_topup.py /app/run_topup.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_wallet.py"]
+CMD ["python", "run_topup.py"]
