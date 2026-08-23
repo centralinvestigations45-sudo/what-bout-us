@@ -11,7 +11,7 @@ def pricing_home():
     # Clarify what each paid plan includes.
     html = html.replace(
         'Text conversations · Multiple companions · Conversation memory · Multiple languages',
-        '1 companion · Limited accessories · Premium accessories are visible but locked · Upgrade to unlock high-end accessories',
+        '1 companion · Limited accessory selection · Text conversations · Conversation memory · Multiple languages',
         1,
     )
     html = html.replace(
@@ -30,12 +30,12 @@ def pricing_home():
   <div style="background:#131319;border:1px solid #57334a;border-radius:20px;padding:24px 22px">
     <div style="font-size:13px;font-weight:900;letter-spacing:1px;color:#d36580;margin-bottom:8px">WHICH PLAN IS BEST?</div>
     <h2 style="margin:0 0 10px">WHAT BOUT US™ UNLIMITED Yearly — Best Overall Value</h2>
-    <p class="sub" style="line-height:1.65;margin:0 0 18px">The Unlimited Yearly plan at <strong>$149.99/year</strong> is the best overall value for someone who wants the complete What Bout Us™ experience. It includes <strong>all 32 companions</strong>, voice-ready conversations, premium style customization, and <strong>full access to the high-end accessory collection</strong>, including chains, diamond pieces, premium boots and other premium items. The <strong>$14.99 monthly plan</strong> also unlocks the full premium accessory collection, but it is limited to <strong>up to 2 companions</strong>. The <strong>$9.99 monthly plan</strong> includes 1 companion and limited accessories; premium items can still be seen, but they stay locked until the member upgrades. Paying $14.99 each month for 12 months would total <strong>$179.88</strong>, so the $149.99 yearly plan saves <strong>$29.89</strong> while also opening the full 32-companion experience.</p>
+    <p class="sub" style="line-height:1.65;margin:0 0 18px">The Unlimited Yearly plan at <strong>$149.99/year</strong> is the best overall value for someone who wants the complete What Bout Us™ experience. It includes <strong>all 32 companions</strong>, voice-ready conversations, premium style customization, and <strong>full access to the high-end accessory collection</strong>, including chains, diamond pieces, premium boots and other premium items. The <strong>$14.99 monthly plan</strong> also unlocks the full premium accessory collection, but it is limited to <strong>up to 2 companions</strong>. The <strong>$9.99 monthly plan</strong> includes 1 companion and a <strong>limited selection of accessories</strong>. Members on that plan still get accessories, just not the full premium/high-end collection available on the higher plans. Paying $14.99 each month for 12 months would total <strong>$179.88</strong>, so the $149.99 yearly plan saves <strong>$29.89</strong> while also opening the full 32-companion experience.</p>
     <div style="display:grid;gap:10px">
       <div><strong>1. Unlimited Yearly — $149.99/year</strong> · All 32 companions · Full premium accessories · Best overall value</div>
       <div><strong>2. Plus Yearly — $99.99/year</strong> · Best lower-cost yearly option</div>
       <div><strong>3. Unlimited Monthly — $14.99/month</strong> · Up to 2 companions · Full premium accessories</div>
-      <div><strong>4. Plus Monthly — $9.99/month</strong> · 1 companion · Limited accessories · Premium items visible but locked until upgrade</div>
+      <div><strong>4. Plus Monthly — $9.99/month</strong> · 1 companion · Limited accessory selection</div>
     </div>
   </div>
 </section>
