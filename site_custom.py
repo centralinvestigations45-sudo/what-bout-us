@@ -8,19 +8,22 @@ MEN_REST = [n for n in app.MEN if n != 'Simone']
 WOMEN_REST = [n for n in app.WOMEN if n != 'Chloe']
 BIRTHDAYS = {'Simone': 'October 15'}
 ZODIAC = {'Simone': 'Libra'}
+PROFESSIONS = {'Simone': 'Private Investigator'}
 
 
 def cards(names):
     out = []
     for n in names:
+        profession = PROFESSIONS.get(n)
         birthday = BIRTHDAYS.get(n)
         zodiac = ZODIAC.get(n)
+        profession_html = f'<small>{app.esc(profession)}</small>' if profession else ''
         birthday_html = f'<small>Birthday: {app.esc(birthday)}</small>' if birthday else ''
         zodiac_html = f'<small>Zodiac: {app.esc(zodiac)}</small>' if zodiac else ''
         out.append(
             f'<a class="comp" href="{app.url(n)}">'
             f'<div class="avatar"><img src="{app.portrait(n)}" alt="{app.esc(n)} AI companion"></div>'
-            f'<b>{app.esc(n)}</b><small>LIVE</small>{birthday_html}{zodiac_html}</a>'
+            f'<b>{app.esc(n)}</b><small>LIVE</small>{profession_html}{birthday_html}{zodiac_html}</a>'
         )
     return ''.join(out)
 
@@ -30,14 +33,14 @@ def home():
     return app.page('What Bout Us™ — AI Companions', b)
 
 
-# Add Simone's birthday and zodiac sign to his existing live companion profile without changing chat/voice behavior.
+# Add Simone's profession first, then birthday and zodiac, without changing chat/voice behavior.
 _original_companion_page = app_v2.companion_page
 
 def companion_page(name):
     html = _original_companion_page(name)
     if name == 'Simone':
-        html = html.replace('Height 6\'1&quot;', 'Height 6\'1&quot; · Birthday October 15 · Zodiac Libra')
-        html = html.replace('Height 6\'1"', 'Height 6\'1" · Birthday October 15 · Zodiac Libra')
+        html = html.replace('<h1>Simone</h1>', '<h1>Simone</h1><div class="banner" style="margin-bottom:12px">Private Investigator</div>')
+        html = html.replace('Height 6\'1" · 2-minute free demo', 'Height 6\'1" · Birthday October 15 · Zodiac Libra · 2-minute free demo')
     return html
 
 app.cards = cards
