@@ -13,7 +13,7 @@ def companion_page(name):
         html = html.replace(
             '<h1>Simone</h1>',
             '<h1 style="margin-bottom:4px">Simone</h1>'
-            '<div style="font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 14px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)">♎ Libra</div>'
+            '<div style="font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 14px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)">⚖️ Libra</div>'
             '<div style="font-size:17px;font-weight:700;margin:0 0 8px">Career: Private Investigator</div>'
             '<div style="font-size:16px;color:#c9c9cf;margin:0 0 16px">Birthday: October 15</div>'
         )
