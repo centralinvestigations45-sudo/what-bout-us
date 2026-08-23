@@ -9,5 +9,4 @@ base.WOMEN = ['Chloe','Aria','Mika','Zoey','Nova','Sophia','Isabella','Lily','Em
 base.ALL = base.MEN + base.WOMEN
 
 if __name__ == '__main__':
-    run_profile.audit_companion_pages()
     ThreadingHTTPServer(('0.0.0.0', base.PORT), run_profile.run_current.ProductionHandler).serve_forever()
