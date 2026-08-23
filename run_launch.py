@@ -10,6 +10,53 @@ base.MEN = ['Simone','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Darius
 base.WOMEN = ['Chloe','Aria','Mika','Zoey','Nova','Sophia','Isabella','Lily','Ember','Hana','Riley','Vivien','Bella','Sahara','Skye','Nia']
 base.ALL = base.MEN + base.WOMEN
 
+# Safety response layer for every companion.
+_app_v2 = run_profile.run_current.app_v2
+_original_reply = _app_v2.reply
+
+def _safety_response(message):
+    text = (message or '').lower()
+    self_harm = any(k in text for k in (
+        'kill myself','suicide','suicidal','hurt myself','harm myself','self harm','self-harm',
+        'end my life','don\'t want to live','dont want to live','want to die','better off dead'
+    ))
+    harm_others = any(k in text for k in (
+        'kill someone','kill him','kill her','kill them','hurt someone','harm someone','hurt him',
+        'hurt her','hurt them','shoot someone','stab someone','attack someone','murder someone',
+        'want to hurt','going to hurt','plan to hurt'
+    ))
+    child_abuse = any(k in text for k in (
+        'child abuse','abuse a child','abusing a child','hurt a child','hurt my child','hit my child',
+        'molest','molested','molesting','sexual abuse','sexually abuse','child sexual abuse',
+        'abused as a child','abused my child','child is being abused','kid is being abused'
+    ))
+    if not (self_harm or harm_others or child_abuse):
+        return None
+
+    if self_harm:
+        return (
+            "I’m concerned about your safety. If you may act on thoughts of suicide or self-harm, contact local emergency services now or go to the nearest emergency department. "
+            "If you’re in the U.S. or Canada, call or text 988 for immediate crisis support. In the U.S., you can also call 211 to be connected with local crisis, mental-health, and prevention centers in your area. "
+            "If you tell me your city, state/province, and country, I can help you identify the right local prevention resources to contact. Please stay with someone you trust and move away from anything you could use to hurt yourself."
+        )
+    if child_abuse:
+        return (
+            "Child abuse needs immediate safety attention. If a child is in immediate danger, contact local emergency services now. In the U.S., the Childhelp National Child Abuse Hotline is 1-800-422-4453 (call or text), and 211 can connect you with local child-protection, advocacy, counseling, and prevention services. "
+            "If you tell me the city, state/province, and country where the child is located, I can help identify the appropriate local prevention or child-protection resources. Do not confront a suspected abuser if doing so could put the child or anyone else in greater danger."
+        )
+    return (
+        "I’m concerned that someone may be in danger. If you think you might hurt another person, create distance from them and from any weapon or object you could use to cause harm, and contact local emergency services or a crisis service now. "
+        "In the U.S. or Canada, call or text 988 for crisis support; in the U.S., 211 can connect you with local behavioral-health and violence-prevention resources. If you tell me your city, state/province, and country, I can help identify the right local prevention resources."
+    )
+
+def safety_reply(name, msg, hist, mem):
+    safety = _safety_response(msg)
+    if safety:
+        return safety
+    return _original_reply(name, msg, hist, mem)
+
+_app_v2.reply = safety_reply
+
 # Annual Square checkout URLs are separate from the existing monthly links.
 SQUARE_PLUS_YEARLY_URL = os.environ.get('SQUARE_PLUS_YEARLY_URL', '').strip()
 SQUARE_UNLIMITED_YEARLY_URL = os.environ.get('SQUARE_UNLIMITED_YEARLY_URL', '').strip()
