@@ -4,26 +4,28 @@ from urllib.parse import urlparse
 import run_topup
 
 base = run_topup.base
-LOGO_PATH = '/static/wbu-social-preview.jpg'
+LOGO_PATH = '/static/wbu-official-logo.jpg'
 PUBLIC_URL = 'https://what-bout-us-app-production.up.railway.app'
 _original_nav = base.nav
 _original_footer = base.footer
 _original_page = base.page
+_original_home = base.home
 
 
 def branded_nav():
     return ('<div class="nav"><div class="shell navin">'
             '<a class="brand" href="/" style="display:flex;align-items:center;gap:10px">'
-            '<img src="'+LOGO_PATH+'" alt="What Bout Us AI Companions" '
-            'style="width:118px;height:54px;object-fit:contain;border-radius:10px">'
+            '<img src="'+LOGO_PATH+'" alt="What Bout Us™ AI Companions" '
+            'style="width:132px;height:58px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 8px rgba(236,80,255,.35))">'
             '</a><div class="links"><a href="/#companions">Companions</a>'
             '<a href="/#plans">Plans</a><a href="/account">Account</a>'
             '<a href="/simone">Talk to Simone</a></div></div></div>')
 
 
 def branded_footer():
-    return ('<div class="fine"><img src="'+LOGO_PATH+'" alt="What Bout Us AI Companions" '
-            'style="display:block;width:150px;max-width:55vw;height:auto;margin:0 auto 14px;border-radius:12px">'
+    return ('<div class="fine">'
+            '<img src="'+LOGO_PATH+'" alt="What Bout Us™ AI Companions" '
+            'style="display:block;width:190px;max-width:62vw;height:auto;margin:0 auto 16px;border-radius:14px;filter:drop-shadow(0 0 12px rgba(236,80,255,.28))">'
             '© 2026 What Bout Us<span class="tm">™</span>. All Rights Reserved. · Adults 21+</div>')
 
 
@@ -38,9 +40,9 @@ def branded_page(title, body):
             '<meta property="og:image" content="'+PUBLIC_URL+LOGO_PATH+'">'
             '<meta property="og:image:secure_url" content="'+PUBLIC_URL+LOGO_PATH+'">'
             '<meta property="og:image:type" content="image/jpeg">'
-            '<meta property="og:image:width" content="400">'
-            '<meta property="og:image:height" content="210">'
-            '<meta property="og:image:alt" content="What Bout Us AI Companions logo">'
+            '<meta property="og:image:width" content="700">'
+            '<meta property="og:image:height" content="700">'
+            '<meta property="og:image:alt" content="What Bout Us™ AI Companions official logo">'
             '<meta name="twitter:card" content="summary_large_image">'
             '<meta name="twitter:title" content="What Bout Us™ — AI Companions">'
             '<meta name="twitter:description" content="Someone to talk to. Someone who remembers.">'
@@ -50,16 +52,30 @@ def branded_page(title, body):
     return html.replace('</head>', meta + '</head>', 1)
 
 
+def branded_home():
+    html = _original_home()
+    hero_logo = ('<div style="max-width:1180px;margin:18px auto -8px;padding:0 18px;text-align:center">'
+                 '<img src="'+LOGO_PATH+'" alt="What Bout Us™ AI Companions" '
+                 'style="width:min(360px,78vw);height:auto;border-radius:22px;filter:drop-shadow(0 0 20px rgba(236,80,255,.32))">'
+                 '</div>')
+    marker = '<main class="shell">'
+    if marker in html:
+        html = html.replace(marker, marker + hero_logo, 1)
+    return html
+
+
 base.nav = branded_nav
 base.footer = branded_footer
 base.page = branded_page
+base.home = branded_home
 
 
 class BrandedHandler(run_topup.TopupHandler):
     def do_GET(self):
-        if urlparse(self.path).path == LOGO_PATH:
+        path = urlparse(self.path).path
+        if path in (LOGO_PATH, '/favicon.ico', '/apple-touch-icon.png'):
             try:
-                p = os.path.join(os.path.dirname(__file__), 'static', 'wbu-social-preview.jpg')
+                p = os.path.join(os.path.dirname(__file__), 'static', 'wbu-official-logo.jpg')
                 data = open(p, 'rb').read()
                 self.send_response(200)
                 self.send_header('Content-Type', 'image/jpeg')
