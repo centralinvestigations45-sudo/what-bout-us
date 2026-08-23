@@ -4,9 +4,9 @@ from pathlib import Path
 import run_topup
 
 base = run_topup.base
-LOGO_PATH = '/brand-logo.svg'
+LOGO_PATH = '/brand-logo.png'
 PUBLIC_URL = 'https://what-bout-us-app-production.up.railway.app'
-LOGO_FILE = Path(__file__).resolve().parent / 'static' / 'wbu-logo-v11.svg'
+LOGO_FILE = Path(__file__).resolve().parent / 'static' / 'wbu-logo-v11.png'
 _original_nav = base.nav
 _original_footer = base.footer
 _original_page = base.page
@@ -29,9 +29,9 @@ def branded_page(title, body):
     meta = ('<meta name="description" content="What Bout Us™ — AI companions with conversation, voice, memory and personalized experiences.">'
             '<meta property="og:type" content="website"><meta property="og:site_name" content="What Bout Us™">'
             '<meta property="og:title" content="What Bout Us™ — AI Companions"><meta property="og:description" content="Someone to talk to. Someone who remembers.">'
-            '<meta property="og:url" content="'+PUBLIC_URL+'/"><meta property="og:image" content="'+image+'">'
-            '<meta property="og:image:alt" content="What Bout Us™ AI Companions official logo">'
-            '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="'+image+'">')
+            '<meta property="og:url" content="'+PUBLIC_URL+'/"><meta property="og:image" content="'+image+'"><meta property="og:image:type" content="image/png">'
+            '<meta property="og:image:alt" content="What Bout Us™ AI Companions official logo"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="'+image+'">'
+            '<link rel="icon" type="image/png" href="'+LOGO_PATH+'?v=11"><link rel="apple-touch-icon" href="'+LOGO_PATH+'?v=11">')
     return html.replace('</head>', meta + '</head>', 1)
 
 
@@ -48,26 +48,27 @@ base.footer = branded_footer
 base.page = branded_page
 base.home = branded_home
 
-
 class BrandedHandler(run_topup.TopupHandler):
     def do_GET(self):
         path = urlparse(self.path).path
-        if path in (LOGO_PATH, '/brand-logo', '/brand-logo.png', '/brand-logo.jpg', '/static/wbu-official-logo.webp', '/favicon.ico', '/apple-touch-icon.png'):
+        if path in (LOGO_PATH, '/brand-logo', '/brand-logo.jpg', '/brand-logo.svg', '/static/wbu-official-logo.webp', '/favicon.ico', '/apple-touch-icon.png'):
             try:
                 data = LOGO_FILE.read_bytes()
+                if not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                    raise ValueError('v11 logo is not a valid PNG')
             except Exception as exc:
                 print('LOGO_ERROR', repr(exc), flush=True)
                 self.send_error(500, 'Logo asset unavailable')
                 return
             self.send_response(200)
-            self.send_header('Content-Type', 'image/svg+xml; charset=utf-8')
+            self.send_header('Content-Type', 'image/png')
+            self.send_header('X-Content-Type-Options', 'nosniff')
             self.send_header('Cache-Control', 'no-store, max-age=0')
             self.send_header('Content-Length', str(len(data)))
             self.end_headers()
             self.wfile.write(data)
             return
         return super().do_GET()
-
 
 if __name__ == '__main__':
     ThreadingHTTPServer(('0.0.0.0', base.PORT), BrandedHandler).serve_forever()
