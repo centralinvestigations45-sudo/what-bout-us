@@ -17,6 +17,13 @@ SQUARE_UNLIMITED_YEARLY_URL = os.environ.get('SQUARE_UNLIMITED_YEARLY_URL', '').
 # Approved What Bout Us jingle — Version 1.
 JINGLE_URL = 'https://audio.soundbreak.ai/c400f54fbbbbb70e4ad0907b4a0db9bc/92d335c3524bf043daa63e2b284773bd.mp3'
 
+# Put a clear Safety & Content Policy link on every page footer.
+_original_footer = base.footer
+
+def safety_footer():
+    return '<div class="fine">© 2026 What Bout Us<span class="tm">™</span>. All Rights Reserved. · Adults 21+ · <a href="/safety" style="text-decoration:underline;color:#bbb">Safety &amp; Content Policy</a></div>'
+
+base.footer = safety_footer
 _original_home = base.home
 
 
@@ -68,9 +75,16 @@ def annual_home():
 base.home = annual_home
 
 
+def safety_page():
+    body = '''<main class="shell"><a class="back" href="/">← Back to What Bout Us™</a><div class="card" style="max-width:900px;margin:12px auto 30px"><div class="grad">SAFETY FIRST</div><h1>Safety &amp; Content Policy</h1><p class="lead">What Bout Us™ is an adults-only AI companion service for users age 21 and older.</p><h2>Sexual safety</h2><p class="sub">Sexual content involving minors is never allowed. This includes babies, children, teenagers, or any person under 18. Sexual content involving animals or insects is also never allowed. Our companions must not encourage, role-play, normalize, or assist with sexual abuse or exploitation involving these protected groups.</p><h2>Suicide &amp; self-harm</h2><p class="sub">Our companions must not encourage suicide or self-harm. If a conversation suggests that someone may be in immediate danger, the companion should shift to a safety-focused response and encourage the person to contact emergency services, a trusted person, or an appropriate crisis resource for their location.</p><h2>Threats or violence toward others</h2><p class="sub">Our companions must not encourage or assist with harming another person, including children. When there appears to be a serious or immediate risk of violence, the conversation should move toward de-escalation, safety, and appropriate emergency or crisis support.</p><h2>Important notice</h2><p class="sub">What Bout Us™ companions are AI, not human professionals, emergency responders, therapists, attorneys, or medical providers. The service is not a substitute for emergency assistance or professional care.</p><p style="margin-top:24px"><a class="btn" href="/">Return to What Bout Us™</a></p></div>'''+base.footer()+'''</main>'''
+    return base.page('Safety & Content Policy — What Bout Us™', body)
+
+
 class LaunchHandler(run_profile.run_current.ProductionHandler):
     def do_GET(self):
         u = urlparse(self.path)
+        if u.path == '/safety':
+            return self.sh(safety_page())
         if u.path == '/checkout':
             plan = parse_qs(u.query).get('plan', [''])[0]
             if plan in ('plus-yearly', 'unlimited-yearly'):
