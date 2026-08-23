@@ -54,11 +54,9 @@ def annual_home():
   window.wbuPause=function(){{userPaused=true;a.pause();status('Paused');}};
   window.wbuStop=function(){{userStopped=true;userPaused=false;a.pause();a.currentTime=0;status('Stopped');}};
   function tryStart(){{if(started||userPaused||userStopped)return;a.play().then(()=>{{started=true;status('Playing')}}).catch(()=>status('Tap anywhere to start'));}}
-  // Try immediately. Browsers that allow sound autoplay will start at once.
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryStart,{once:true});else tryStart();
-  // iPhone/Safari and many browsers block sound autoplay. The first click/tap anywhere on the site starts it.
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryStart);else tryStart();
   document.addEventListener('click',tryStart);
-  document.addEventListener('touchend',tryStart,{passive:true});
+  document.addEventListener('touchend',tryStart);
   a.addEventListener('ended',()=>{{started=false;status('Finished');}});
 }})();
 </script>
