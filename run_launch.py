@@ -14,6 +14,9 @@ base.ALL = base.MEN + base.WOMEN
 SQUARE_PLUS_YEARLY_URL = os.environ.get('SQUARE_PLUS_YEARLY_URL', '').strip()
 SQUARE_UNLIMITED_YEARLY_URL = os.environ.get('SQUARE_UNLIMITED_YEARLY_URL', '').strip()
 
+# Approved What Bout Us jingle — Version 1.
+JINGLE_URL = 'https://audio.soundbreak.ai/c400f54fbbbbb70e4ad0907b4a0db9bc/92d335c3524bf043daa63e2b284773bd.mp3'
+
 _original_home = base.home
 
 
@@ -28,6 +31,39 @@ def annual_home():
 
     html = html.replace(plus_old, plus_new)
     html = html.replace(unlimited_old, unlimited_new)
+
+    player = f'''
+<div id="wbu-jingle-player" style="position:fixed;left:14px;right:14px;bottom:14px;z-index:9999;max-width:520px;margin:auto;background:#131319ee;border:1px solid #3b3b45;border-radius:18px;padding:12px 14px;box-shadow:0 10px 35px #0009;backdrop-filter:blur(12px)">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="min-width:0"><div style="font-weight:900;font-size:14px">What Bout Us™ Jingle</div><div id="wbu-jingle-status" style="font-size:11px;color:#aaa;margin-top:2px">Tap anywhere to start</div></div>
+    <div style="display:flex;gap:7px;flex-shrink:0">
+      <button type="button" onclick="wbuPlay()" aria-label="Play jingle" style="background:#d36580;color:#fff;border:0;border-radius:11px;padding:9px 11px;font-weight:800">Play</button>
+      <button type="button" onclick="wbuPause()" aria-label="Pause jingle" style="background:#202026;color:#fff;border:1px solid #444;border-radius:11px;padding:9px 11px;font-weight:800">Pause</button>
+      <button type="button" onclick="wbuStop()" aria-label="Stop jingle" style="background:#202026;color:#fff;border:1px solid #444;border-radius:11px;padding:9px 11px;font-weight:800">Stop</button>
+    </div>
+  </div>
+</div>
+<audio id="wbu-jingle" preload="auto" playsinline src="{JINGLE_URL}"></audio>
+<script>
+(function(){{
+  const a=document.getElementById('wbu-jingle');
+  const s=document.getElementById('wbu-jingle-status');
+  let userPaused=false,userStopped=false,started=false;
+  function status(t){{if(s)s.textContent=t}}
+  window.wbuPlay=function(){{userPaused=false;userStopped=false;a.play().then(()=>{{started=true;status('Playing')}}).catch(()=>status('Tap anywhere to start'));}};
+  window.wbuPause=function(){{userPaused=true;a.pause();status('Paused');}};
+  window.wbuStop=function(){{userStopped=true;userPaused=false;a.pause();a.currentTime=0;status('Stopped');}};
+  function tryStart(){{if(started||userPaused||userStopped)return;a.play().then(()=>{{started=true;status('Playing')}}).catch(()=>status('Tap anywhere to start'));}}
+  // Try immediately. Browsers that allow sound autoplay will start at once.
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryStart,{once:true});else tryStart();
+  // iPhone/Safari and many browsers block sound autoplay. The first click/tap anywhere on the site starts it.
+  document.addEventListener('click',tryStart);
+  document.addEventListener('touchend',tryStart,{passive:true});
+  a.addEventListener('ended',()=>{{started=false;status('Finished');}});
+}})();
+</script>
+'''
+    html = html.replace('</body>', player + '</body>')
     return html
 
 
