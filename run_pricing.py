@@ -7,21 +7,44 @@ base = run_idle.base
 _original_home = base.home
 _original_companion_page = base.companion_page
 
-BASIC_ACCESSORIES = [
-    ('Classic Watch', 'watch'),
-    ('Everyday Sunglasses', 'sunglasses'),
-    ('Casual Cap', 'cap'),
-    ('Simple Bracelet', 'bracelet'),
-    ('Casual Sneakers', 'sneakers'),
+CLOTHING = [
+    ('Polo Shirt', 'polo-shirt', False),
+    ('Long Sleeve Shirt', 'long-sleeve-shirt', False),
+    ('Short Sleeve Shirt', 'short-sleeve-shirt', False),
+    ('Dress Shirt', 'dress-shirt', False),
+    ('Casual Pants', 'casual-pants', False),
+    ('Khakis', 'khakis', False),
+    ('Dress Pants', 'dress-pants', False),
+    ('Premium Designer Polo', 'premium-designer-polo', True),
+    ('Premium Tailored Dress Shirt', 'premium-tailored-dress-shirt', True),
+    ('Premium Tailored Dress Pants', 'premium-tailored-dress-pants', True),
 ]
 
-PREMIUM_ACCESSORIES = [
-    ('Luxury Chain', 'chain'),
-    ('Diamond Piece', 'diamond'),
-    ('Premium Boots', 'boots'),
-    ('Designer Watch', 'designer-watch'),
-    ('Luxury Sunglasses', 'luxury-sunglasses'),
-    ('Premium Jacket', 'premium-jacket'),
+SHOES = [
+    ('Sandals', 'sandals', False),
+    ('Casual Sneakers', 'casual-sneakers', False),
+    ('Dress Shoes', 'dress-shoes', False),
+    ('Everyday Socks', 'everyday-socks', False),
+    ('Dress Socks', 'dress-socks', False),
+    ('Ankle Socks', 'ankle-socks', False),
+    ('Premium Sneakers', 'premium-sneakers', True),
+    ('Premium Dress Shoes', 'premium-dress-shoes', True),
+    ('Premium Boots', 'premium-boots', True),
+]
+
+ACCESSORIES = [
+    ('Men’s Earrings', 'mens-earrings', False),
+    ('Women’s Earrings', 'womens-earrings', False),
+    ('Men’s Watch', 'mens-watch', False),
+    ('Women’s Watch', 'womens-watch', False),
+    ('Men’s Bracelet', 'mens-bracelet', False),
+    ('Women’s Bracelet', 'womens-bracelet', False),
+    ('Necklace', 'necklace', False),
+    ('Men’s Chain', 'mens-chain', False),
+    ('Premium Men’s Diamond Chain', 'premium-mens-diamond-chain', True),
+    ('Premium Men’s Luxury Watch', 'premium-mens-luxury-watch', True),
+    ('Premium Women’s Diamond Earrings', 'premium-womens-diamond-earrings', True),
+    ('Women’s Diamond Ring', 'womens-diamond-ring', True),
 ]
 
 
@@ -30,17 +53,17 @@ def pricing_home():
 
     html = html.replace(
         'Text conversations · Multiple companions · Conversation memory · Multiple languages',
-        '1 companion · Limited accessory selection · Text conversations · Conversation memory · Multiple languages',
+        '1 companion · Limited clothing, shoes and accessory selection · Text conversations · Conversation memory · Multiple languages',
         1,
     )
     html = html.replace(
         'All 32 companions · Voice-ready conversations · Premium style customization · Expanded accessories',
-        'Up to 2 companions · Voice-ready conversations · Premium style customization · Full premium accessory access, including high-end items such as chains, diamond pieces and premium boots',
+        'Up to 2 companions · Voice-ready conversations · Premium style customization · Full premium clothing, shoe and accessory access',
         1,
     )
     html = html.replace(
         '<div class="price" style="font-size:32px">$149.99 <small>/ year</small></div><p class="sub" style="margin:6px 0 14px">2 months off</p>',
-        '<div class="price" style="font-size:32px">$149.99 <small>/ year</small></div><p class="sub" style="margin:8px 0 6px"><strong>All 32 companions</strong> · Voice-ready conversations · Premium style customization · Full premium accessory access, including high-end chains, diamond pieces and premium boots</p><p class="sub" style="margin:6px 0 14px">2 months off</p>',
+        '<div class="price" style="font-size:32px">$149.99 <small>/ year</small></div><p class="sub" style="margin:8px 0 6px"><strong>All 32 companions</strong> · Voice-ready conversations · Premium style customization · Full premium clothing, shoe and accessory access</p><p class="sub" style="margin:6px 0 14px">2 months off</p>',
         1,
     )
 
@@ -49,13 +72,13 @@ def pricing_home():
   <div style="background:#131319;border:1px solid #57334a;border-radius:20px;padding:24px 22px">
     <div style="font-size:13px;font-weight:900;letter-spacing:1px;color:#d36580;margin-bottom:8px">WHICH PLAN IS BEST?</div>
     <h2 style="margin:0 0 10px">WHAT BOUT US™ UNLIMITED Yearly — Best Overall Value</h2>
-    <p class="sub" style="line-height:1.65;margin:0 0 18px">The Unlimited Yearly plan at <strong>$149.99/year</strong> is the best overall value for someone who wants the complete What Bout Us™ experience. It includes <strong>all 32 companions</strong>, voice-ready conversations, premium style customization, and <strong>full access to the high-end accessory collection</strong>, including chains, diamond pieces, premium boots and other premium items. The <strong>$14.99 monthly plan</strong> also unlocks the full premium accessory collection, but it is limited to <strong>up to 2 companions</strong>. The <strong>$9.99 monthly plan</strong> includes 1 companion and a <strong>limited selection of accessories</strong>. Members on that plan still get accessories, just not the full premium/high-end collection available on the higher plans. Paying $14.99 each month for 12 months would total <strong>$179.88</strong>, so the $149.99 yearly plan saves <strong>$29.89</strong> while also opening the full 32-companion experience.</p>
-    <p style="margin:18px 0 0"><a class="btn" href="/accessories">Browse Clothing &amp; Accessories</a></p>
+    <p class="sub" style="line-height:1.65;margin:0 0 18px">The Unlimited Yearly plan at <strong>$149.99/year</strong> is the best overall value for someone who wants the complete What Bout Us™ experience. It includes <strong>all 32 companions</strong>, voice-ready conversations, premium style customization, and <strong>full access to premium clothing, shoes and high-end accessories</strong>. The <strong>$14.99 monthly plan</strong> also unlocks the premium wardrobe and accessories, but is limited to <strong>up to 2 companions</strong>. The <strong>$9.99 monthly plan</strong> includes 1 companion and a <strong>limited selection of clothing, shoes and accessories</strong>. All plans can see the full catalog, but $9.99 members must upgrade to equip premium/high-end items. Paying $14.99 each month for 12 months would total <strong>$179.88</strong>, so the $149.99 yearly plan saves <strong>$29.89</strong> while also opening the full 32-companion experience.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0"><a class="btn" href="/clothing">Clothing</a><a class="btn" href="/shoes">Shoes</a><a class="btn" href="/accessories">Accessories</a></div>
     <div style="display:grid;gap:10px;margin-top:20px">
-      <div><strong>1. Unlimited Yearly — $149.99/year</strong> · All 32 companions · Full premium accessories · Best overall value</div>
+      <div><strong>1. Unlimited Yearly — $149.99/year</strong> · All 32 companions · Full premium wardrobe & accessories · Best overall value</div>
       <div><strong>2. Plus Yearly — $99.99/year</strong> · Best lower-cost yearly option</div>
-      <div><strong>3. Unlimited Monthly — $14.99/month</strong> · Up to 2 companions · Full premium accessories</div>
-      <div><strong>4. Plus Monthly — $9.99/month</strong> · 1 companion · Limited accessory selection</div>
+      <div><strong>3. Unlimited Monthly — $14.99/month</strong> · Up to 2 companions · Full premium wardrobe & accessories</div>
+      <div><strong>4. Plus Monthly — $9.99/month</strong> · 1 companion · Limited clothing, shoes & accessories</div>
     </div>
   </div>
 </section>
@@ -72,38 +95,37 @@ def pricing_home():
 base.home = pricing_home
 
 
-def _cards(items, premium=False):
+def _cards(items, category):
     rows = []
-    for label, key in items:
-        badge = '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#d36580">PREMIUM</span>' if premium else '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#72d8a0">AVAILABLE WITH $9.99+</span>'
-        note = '<div class="sub" style="font-size:12px;margin-top:7px">$14.99 monthly and $149.99 yearly members can equip this item.</div>' if premium else '<div class="sub" style="font-size:12px;margin-top:7px">Included in the limited accessory selection.</div>'
-        rows.append(f'''<div class="card" style="padding:18px;margin:0"><div>{badge}</div><h3 style="margin:8px 0 4px">{base.esc(label)}</h3>{note}<button class="btn {'alt' if premium else ''}" style="margin-top:12px" onclick="equip('{key}','{base.esc(label)}',{str(premium).lower()})">{'Preview / Equip' if premium else 'Equip'}</button></div>''')
+    for label, key, premium in items:
+        badge = '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#d36580">PREMIUM / UPGRADE TO EQUIP</span>' if premium else '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#72d8a0">AVAILABLE WITH $9.99+</span>'
+        note = '<div class="sub" style="font-size:12px;margin-top:7px">Visible to all plans. $14.99 monthly and $149.99 yearly members can equip this premium item.</div>' if premium else '<div class="sub" style="font-size:12px;margin-top:7px">Included in the $9.99 plan selection and all higher plans.</div>'
+        button = 'Preview / Equip' if premium else 'Equip'
+        rows.append(f'''<div class="card" style="padding:18px;margin:0"><div>{badge}</div><h3 style="margin:8px 0 4px">{base.esc(label)}</h3>{note}<button class="btn {'alt' if premium else ''}" style="margin-top:12px" onclick="equip('{category}','{key}','{base.esc(label)}',{str(premium).lower()})">{button}</button></div>''')
     return ''.join(rows)
 
 
-def accessories_page():
+def _nav():
+    return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px"><a class="btn alt" href="/clothing">Clothing</a><a class="btn alt" href="/shoes">Shoes</a><a class="btn alt" href="/accessories">Accessories</a></div>'
+
+
+def _catalog_page(title, subtitle, items, category):
     options = ''.join(f'<option value="{base.esc(n)}">{base.esc(n)}</option>' for n in base.ALL)
-    basic = _cards(BASIC_ACCESSORIES, False)
-    premium = _cards(PREMIUM_ACCESSORIES, True)
+    cards = _cards(items, category)
     body = f'''
 <main class="shell">
   <a class="back" href="/">← Back to What Bout Us™</a>
   <div class="card" style="max-width:1050px;margin:12px auto 24px">
-    <div class="grad">COMPANION WARDROBE</div>
-    <h1>Clothing &amp; Accessories</h1>
-    <p class="lead">Choose a companion, then pick the clothing and accessories you want associated with that companion's look.</p>
+    <div class="grad">COMPANION STYLE</div>
+    <h1>{base.esc(title)}</h1>
+    <p class="lead">{base.esc(subtitle)}</p>
+    {_nav()}
     <div class="field" style="max-width:420px"><label>Choose companion</label><select id="companion" style="width:100%;padding:12px;border-radius:12px;background:#15151b;color:#fff;border:1px solid #3b3b45">{options}</select></div>
     <div id="chosen" class="status" style="margin-top:10px"></div>
   </div>
-  <section style="max-width:1050px;margin:0 auto 28px">
-    <h2>Included Accessories</h2>
-    <p class="sub">$9.99 members can use this limited selection. Higher plans can use these too.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">{basic}</div>
-  </section>
   <section style="max-width:1050px;margin:0 auto 32px">
-    <h2>Premium / High-End Collection</h2>
-    <p class="sub">Visible to everyone. $14.99 monthly and $149.99 yearly members can equip these premium items. $9.99 members can preview them and upgrade to unlock them.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">{premium}</div>
+    <p class="sub">All plans can see every item. $9.99 members can equip the standard items in their limited selection. Premium/high-end items require the $14.99 monthly or $149.99 yearly plan.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">{cards}</div>
   </section>
   {base.footer()}
 </main>
@@ -114,23 +136,37 @@ def accessories_page():
   function key(){{return 'wbu_style_'+c.value}}
   function load(){{
     let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}
-    chosen.textContent=x.length?('Equipped to '+c.value+': '+x.map(v=>v.label).join(', ')):('No accessories selected for '+c.value+' yet.');
+    chosen.textContent=x.length?('Selected for '+c.value+': '+x.map(v=>v.label).join(', ')):('No style items selected for '+c.value+' yet.');
   }}
-  window.equip=function(item,label,premium){{
+  window.equip=function(category,item,label,premium){{
     let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}
-    x=x.filter(v=>v.item!==item);x.push({{item:item,label:label,premium:premium}});localStorage.setItem(key(),JSON.stringify(x));load();
-    if(premium) alert(label+' has been added as a premium selection. Premium access is for $14.99 monthly or $149.99 yearly members.');
+    x=x.filter(v=>!(v.category===category && v.item===item));
+    x.push({{category:category,item:item,label:label,premium:premium}});
+    localStorage.setItem(key(),JSON.stringify(x));load();
+    if(premium) alert(label+' is a premium selection. It is visible to all plans, but equipping premium/high-end items requires the $14.99 monthly or $149.99 yearly plan.');
   }};
   c.addEventListener('change',load);load();
 }})();
 </script>
 '''
-    return base.page('Clothing & Accessories — What Bout Us™', body)
+    return base.page(title + ' — What Bout Us™', body)
+
+
+def clothing_page():
+    return _catalog_page('Clothing', 'Pick shirts and pants for your companion, from casual basics to premium tailored looks.', CLOTHING, 'clothing')
+
+
+def shoes_page():
+    return _catalog_page('Shoes & Socks', 'Pick footwear and socks for your companion, including sandals, sneakers, dress shoes and premium footwear.', SHOES, 'shoes')
+
+
+def accessories_page():
+    return _catalog_page('Accessories', 'Pick earrings, watches, bracelets, necklaces, men’s chains and women’s diamond rings for your companion.', ACCESSORIES, 'accessories')
 
 
 def styled_companion_page(name):
     html = _original_companion_page(name)
-    panel = f'''<div id="wbu-current-look" class="card" style="margin:16px 0;padding:14px 16px"><strong>Current look</strong><div id="wbu-style-list" class="sub" style="margin-top:5px">No accessories selected.</div><a href="/accessories" style="display:inline-block;margin-top:8px;text-decoration:underline;color:#fff">Change clothing &amp; accessories</a></div><script>(function(){{let x=[];try{{x=JSON.parse(localStorage.getItem('wbu_style_{name}')||'[]')}}catch(e){{}}let el=document.getElementById('wbu-style-list');if(el&&x.length)el.textContent=x.map(v=>v.label).join(' · ');}})();</script>'''
+    panel = f'''<div id="wbu-current-look" class="card" style="margin:16px 0;padding:14px 16px"><strong>Current style selections</strong><div id="wbu-style-list" class="sub" style="margin-top:5px">No style items selected.</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><a href="/clothing" style="text-decoration:underline;color:#fff">Clothing</a><a href="/shoes" style="text-decoration:underline;color:#fff">Shoes</a><a href="/accessories" style="text-decoration:underline;color:#fff">Accessories</a></div></div><script>(function(){{let x=[];try{{x=JSON.parse(localStorage.getItem('wbu_style_{name}')||'[]')}}catch(e){{}}let el=document.getElementById('wbu-style-list');if(el&&x.length)el.textContent=x.map(v=>v.label).join(' · ');}})();</script>'''
     marker = '<div id="history"></div>'
     if marker in html:
         html = html.replace(marker, panel + marker, 1)
@@ -144,7 +180,12 @@ base.companion_page = styled_companion_page
 
 class PricingHandler(run_idle.run_analytics.AnalyticsHandler):
     def do_GET(self):
-        if urlparse(self.path).path == '/accessories':
+        path = urlparse(self.path).path
+        if path == '/clothing':
+            return self.sh(clothing_page())
+        if path == '/shoes':
+            return self.sh(shoes_page())
+        if path == '/accessories':
             return self.sh(accessories_page())
         return super().do_GET()
 
