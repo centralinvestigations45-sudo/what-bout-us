@@ -48,7 +48,8 @@ def branded_home():
     html = _original_home()
     hero_logo = ('<div style="max-width:1180px;margin:18px auto -8px;padding:0 18px;text-align:center">'
                  '<img src="'+LOGO_PATH+'?v=8" alt="What Bout Us™ AI Companions" '
-                 'style="width:min(420px,86vw);height:auto;border-radius:22px;display:block;margin:auto">'</n                 '</div>')
+                 'style="width:min(420px,86vw);height:auto;border-radius:22px;display:block;margin:auto">'
+                 '</div>')
     marker = '<main class="shell">'
     if marker in html:
         html = html.replace(marker, marker + hero_logo, 1)
