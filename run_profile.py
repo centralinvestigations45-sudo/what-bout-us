@@ -47,6 +47,12 @@ BIRTHDAYS = {
     'Vivien': 'October 13',
     'Nia': 'October 16',
     'Ember': 'October 23',
+    'Alex': 'April 2',
+    'Damien': 'November 8',
+    'Logan': 'December 3',
+    'Lily': 'March 5',
+    'Aria': 'May 7',
+    'Mika': 'June 10',
 }
 
 SIGN_STYLE = 'font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 10px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)'
