@@ -8,6 +8,7 @@ COPY run_profile.py /app/run_profile.py
 COPY run_launch.py /app/run_launch.py
 COPY run_analytics.py /app/run_analytics.py
 COPY run_idle.py /app/run_idle.py
+COPY run_pricing.py /app/run_pricing.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_idle.py"]
+CMD ["python", "run_pricing.py"]
