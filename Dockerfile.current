@@ -5,6 +5,7 @@ COPY app_v2.py /app/app_v2.py
 COPY run_nice.py /app/run_nice.py
 COPY run_current.py /app/run_current.py
 COPY run_profile.py /app/run_profile.py
+COPY run_launch.py /app/run_launch.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_profile.py"]
+CMD ["python", "run_launch.py"]
