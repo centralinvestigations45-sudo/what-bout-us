@@ -17,7 +17,7 @@ def cards(names):
         profession = PROFESSIONS.get(n)
         birthday = BIRTHDAYS.get(n)
         zodiac = ZODIAC.get(n)
-        profession_html = f'<small>{app.esc(profession)}</small>' if profession else ''
+        profession_html = f'<small>Career: {app.esc(profession)}</small>' if profession else ''
         birthday_html = f'<small>Birthday: {app.esc(birthday)}</small>' if birthday else ''
         zodiac_html = f'<small>Zodiac: {app.esc(zodiac)}</small>' if zodiac else ''
         out.append(
@@ -33,14 +33,15 @@ def home():
     return app.page('What Bout Us™ — AI Companions', b)
 
 
-# Add Simone's profession first, then birthday and zodiac, without changing chat/voice behavior.
+# Add Simone's highlighted zodiac under his name, then career and birthday, without changing chat/voice behavior.
 _original_companion_page = app_v2.companion_page
 
 def companion_page(name):
     html = _original_companion_page(name)
     if name == 'Simone':
-        html = html.replace('<h1>Simone</h1>', '<h1>Simone</h1><div class="banner" style="margin-bottom:12px">Private Investigator</div>')
-        html = html.replace('Height 6\'1" · 2-minute free demo', 'Height 6\'1" · Birthday October 15 · Zodiac Libra · 2-minute free demo')
+        libra = '<div style="font-family:Georgia,\'Times New Roman\',serif;font-style:italic;font-size:23px;font-weight:700;letter-spacing:1.2px;color:#ffd3e2;text-shadow:0 0 12px rgba(255,105,160,.55);margin:-5px 0 12px">♎ Libra</div>'
+        details = '<div class="banner" style="margin-bottom:10px"><b>Career:</b> Private Investigator</div><div class="banner" style="margin-bottom:12px"><b>Birthday:</b> October 15</div>'
+        html = html.replace('<h1>Simone</h1>', '<h1>Simone</h1>' + libra + details)
     return html
 
 app.cards = cards
