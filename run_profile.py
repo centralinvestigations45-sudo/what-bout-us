@@ -3,6 +3,15 @@ import run_current
 
 base = run_current.base
 
+# Keep the live roster aligned with the height table used by app_v2.
+# Darius and Julius replaced older roster entries, so add their heights here
+# before any companion page is rendered. Keep Malik explicit too.
+run_current.app_v2.HEIGHTS.update({
+    'Darius': "6'1\"",
+    'Julius': "6'2\"",
+    'Malik': "6'3\"",
+})
+
 _original_companion_page = base.companion_page
 
 PROFILES = {
@@ -131,7 +140,37 @@ def companion_page(name):
     return html
 
 
+def audit_companion_pages():
+    """Fail startup if any non-Simone/Chloe companion page cannot render or loses required profile data."""
+    failures = []
+    checked = 0
+    for name in base.ALL:
+        if name in {'Simone', 'Chloe'}:
+            continue
+        checked += 1
+        try:
+            html = companion_page(name)
+            age, sign = PROFILES[name]
+            required = [
+                f'>{name}</h1>',
+                f'Age: {age}',
+                f'Birthday: {BIRTHDAYS[name]}',
+                sign,
+                '<img src=',
+                'Height ',
+            ]
+            missing = [item for item in required if item not in html]
+            if missing:
+                failures.append(f"{name}: missing {missing}")
+        except Exception as exc:
+            failures.append(f"{name}: {type(exc).__name__}: {exc}")
+    if failures:
+        raise RuntimeError('COMPANION_AUDIT_FAILED | ' + ' | '.join(failures))
+    print(f'COMPANION_AUDIT_OK checked={checked} non-free companion pages')
+
+
 base.companion_page = companion_page
 
 if __name__ == '__main__':
+    audit_companion_pages()
     ThreadingHTTPServer(('0.0.0.0', base.PORT), run_current.ProductionHandler).serve_forever()
