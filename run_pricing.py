@@ -33,7 +33,7 @@ SHOES = [
 ]
 
 ACCESSORIES = [
-    ('Men’s Earrings', 'mens-earrings', False),
+    ('Fashion and Watches', 'fashion-and-watches', False),
     ('Women’s Earrings', 'womens-earrings', False),
     ('Men’s Watch', 'mens-watch', False),
     ('Women’s Watch', 'womens-watch', False),
@@ -50,57 +50,18 @@ ACCESSORIES = [
 
 def pricing_home():
     html = _original_home()
-
-    html = html.replace(
-        'Text conversations · Multiple companions · Conversation memory · Multiple languages',
-        '1 companion · Limited clothing, shoes and accessory selection · Text conversations · Conversation memory · Multiple languages',
-        1,
-    )
-    html = html.replace(
-        'All 32 companions · Voice-ready conversations · Premium style customization · Expanded accessories',
-        'Up to 2 companions · Voice-ready conversations · Premium style customization · Full premium clothing, shoe and accessory access',
-        1,
-    )
-    html = html.replace(
-        '<div class="price" style="font-size:32px">$149.99 <small>/ year</small></div><p class="sub" style="margin:6px 0 14px">2 months off</p>',
-        '<div class="price" style="font-size:32px">$149.99 <small>/ year</small></div><p class="sub" style="margin:8px 0 6px"><strong>All 32 companions</strong> · Voice-ready conversations · Premium style customization · Full premium clothing, shoe and accessory access</p><p class="sub" style="margin:6px 0 14px">2 months off</p>',
-        1,
-    )
-
-    recommendation = '''
-<section style="max-width:980px;margin:34px auto 20px;padding:0 18px">
-  <div style="background:#131319;border:1px solid #57334a;border-radius:20px;padding:24px 22px">
-    <div style="font-size:13px;font-weight:900;letter-spacing:1px;color:#d36580;margin-bottom:8px">WHICH PLAN IS BEST?</div>
-    <h2 style="margin:0 0 10px">WHAT BOUT US™ UNLIMITED Yearly — Best Overall Value</h2>
-    <p class="sub" style="line-height:1.65;margin:0 0 18px">The Unlimited Yearly plan at <strong>$149.99/year</strong> is the best overall value for someone who wants the complete What Bout Us™ experience. It includes <strong>all 32 companions</strong>, voice-ready conversations, premium style customization, and <strong>full access to premium clothing, shoes and high-end accessories</strong>. The <strong>$14.99 monthly plan</strong> also unlocks the premium wardrobe and accessories, but is limited to <strong>up to 2 companions</strong>. The <strong>$9.99 monthly plan</strong> includes 1 companion and a <strong>limited selection of clothing, shoes and accessories</strong>. All plans can see the full catalog, but $9.99 members must upgrade to equip premium/high-end items. Paying $14.99 each month for 12 months would total <strong>$179.88</strong>, so the $149.99 yearly plan saves <strong>$29.89</strong> while also opening the full 32-companion experience.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0"><a class="btn" href="/clothing">Clothing</a><a class="btn" href="/shoes">Shoes</a><a class="btn" href="/accessories">Accessories</a></div>
-    <div style="display:grid;gap:10px;margin-top:20px">
-      <div><strong>1. Unlimited Yearly — $149.99/year</strong> · All 32 companions · Full premium wardrobe & accessories · Best overall value</div>
-      <div><strong>2. Plus Yearly — $99.99/year</strong> · Best lower-cost yearly option</div>
-      <div><strong>3. Unlimited Monthly — $14.99/month</strong> · Up to 2 companions · Full premium wardrobe & accessories</div>
-      <div><strong>4. Plus Monthly — $9.99/month</strong> · 1 companion · Limited clothing, shoes & accessories</div>
-    </div>
-  </div>
-</section>
-'''
-    marker = '<section style="max-width:980px;margin:54px auto 24px;padding:0 18px;text-align:center">'
-    if marker in html:
-        html = html.replace(marker, recommendation + marker, 1)
-    else:
-        footer = base.footer()
-        html = html.replace(footer, recommendation + footer, 1)
+    html = html.replace('Text conversations · Multiple companions · Conversation memory · Multiple languages','1 companion · Limited clothing, shoes and accessory selection · Text conversations · Conversation memory · Multiple languages',1)
+    html = html.replace('All 32 companions · Voice-ready conversations · Premium style customization · Expanded accessories','Up to 2 companions · Voice-ready conversations · Premium style customization · Full premium clothing, shoe and accessory access',1)
     return html
-
-
 base.home = pricing_home
 
 
 def _cards(items, category):
-    rows = []
-    for label, key, premium in items:
-        badge = '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#d36580">PREMIUM / UPGRADE TO EQUIP</span>' if premium else '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#72d8a0">AVAILABLE WITH $9.99+</span>'
-        note = '<div class="sub" style="font-size:12px;margin-top:7px">Visible to all plans. $14.99 monthly and $149.99 yearly members can equip this premium item.</div>' if premium else '<div class="sub" style="font-size:12px;margin-top:7px">Included in the $9.99 plan selection and all higher plans.</div>'
-        button = 'Preview / Equip' if premium else 'Equip'
+    rows=[]
+    for label,key,premium in items:
+        badge='<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#d36580">PREMIUM / UPGRADE TO EQUIP</span>' if premium else '<span style="font-size:11px;font-weight:900;letter-spacing:.6px;color:#72d8a0">AVAILABLE WITH $9.99+</span>'
+        note='<div class="sub" style="font-size:12px;margin-top:7px">Visible to all plans. Premium plan required to equip.</div>' if premium else '<div class="sub" style="font-size:12px;margin-top:7px">Included in the standard selection.</div>'
+        button='Preview / Equip' if premium else 'Equip'
         rows.append(f'''<div class="card" style="padding:18px;margin:0"><div>{badge}</div><h3 style="margin:8px 0 4px">{base.esc(label)}</h3>{note}<button class="btn {'alt' if premium else ''}" style="margin-top:12px" onclick="equip('{category}','{key}','{base.esc(label)}',{str(premium).lower()})">{button}</button></div>''')
     return ''.join(rows)
 
@@ -109,86 +70,29 @@ def _nav():
     return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px"><a class="btn alt" href="/clothing">Clothing</a><a class="btn alt" href="/shoes">Shoes</a><a class="btn alt" href="/accessories">Accessories</a></div>'
 
 
-def _catalog_page(title, subtitle, items, category):
-    options = ''.join(f'<option value="{base.esc(n)}">{base.esc(n)}</option>' for n in base.ALL)
-    cards = _cards(items, category)
-    body = f'''
-<main class="shell">
-  <a class="back" href="/">← Back to What Bout Us™</a>
-  <div class="card" style="max-width:1050px;margin:12px auto 24px">
-    <div class="grad">COMPANION STYLE</div>
-    <h1>{base.esc(title)}</h1>
-    <p class="lead">{base.esc(subtitle)}</p>
-    {_nav()}
-    <div class="field" style="max-width:420px"><label>Choose companion</label><select id="companion" style="width:100%;padding:12px;border-radius:12px;background:#15151b;color:#fff;border:1px solid #3b3b45">{options}</select></div>
-    <div id="chosen" class="status" style="margin-top:10px"></div>
-  </div>
-  <section style="max-width:1050px;margin:0 auto 32px">
-    <p class="sub">All plans can see every item. $9.99 members can equip the standard items in their limited selection. Premium/high-end items require the $14.99 monthly or $149.99 yearly plan.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">{cards}</div>
-  </section>
-  {base.footer()}
-</main>
-<script>
-(function(){{
-  const c=document.getElementById('companion');
-  const chosen=document.getElementById('chosen');
-  function key(){{return 'wbu_style_'+c.value}}
-  function load(){{
-    let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}
-    chosen.textContent=x.length?('Selected for '+c.value+': '+x.map(v=>v.label).join(', ')):('No style items selected for '+c.value+' yet.');
-  }}
-  window.equip=function(category,item,label,premium){{
-    let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}
-    x=x.filter(v=>!(v.category===category && v.item===item));
-    x.push({{category:category,item:item,label:label,premium:premium}});
-    localStorage.setItem(key(),JSON.stringify(x));load();
-    if(premium) alert(label+' is a premium selection. It is visible to all plans, but equipping premium/high-end items requires the $14.99 monthly or $149.99 yearly plan.');
-  }};
-  c.addEventListener('change',load);load();
-}})();
-</script>
-'''
-    return base.page(title + ' — What Bout Us™', body)
+def _catalog_page(title,subtitle,items,category):
+    options=''.join(f'<option value="{base.esc(n)}">{base.esc(n)}</option>' for n in base.ALL)
+    cards=_cards(items,category)
+    body=f'''<main class="shell"><a class="back" href="/">← Back to What Bout Us™</a><div class="card" style="max-width:1050px;margin:12px auto 24px"><div class="grad">COMPANION STYLE</div><h1>{base.esc(title)}</h1><p class="lead">{base.esc(subtitle)}</p>{_nav()}<div class="field" style="max-width:420px"><label>Choose companion</label><select id="companion" style="width:100%;padding:12px;border-radius:12px;background:#15151b;color:#fff;border:1px solid #3b3b45">{options}</select></div><div id="chosen" class="status" style="margin-top:10px"></div></div><section style="max-width:1050px;margin:0 auto 32px"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">{cards}</div></section>{base.footer()}</main><script>(function(){{const c=document.getElementById('companion');const chosen=document.getElementById('chosen');function key(){{return 'wbu_style_'+c.value}}function load(){{let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}chosen.textContent=x.length?('Selected for '+c.value+': '+x.map(v=>v.label).join(', ')):('No style items selected for '+c.value+' yet.')}}window.equip=function(category,item,label,premium){{let x=[];try{{x=JSON.parse(localStorage.getItem(key())||'[]')}}catch(e){{}}x=x.filter(v=>!(v.category===category&&v.item===item));x.push({{category:category,item:item,label:label,premium:premium}});localStorage.setItem(key(),JSON.stringify(x));load();}};c.addEventListener('change',load);load();}})();</script>'''
+    return base.page(title+' — What Bout Us™',body)
 
-
-def clothing_page():
-    return _catalog_page('Clothing', 'Pick shirts and pants for your companion, from casual basics to premium tailored looks.', CLOTHING, 'clothing')
-
-
-def shoes_page():
-    return _catalog_page('Shoes & Socks', 'Pick footwear and socks for your companion, including sandals, sneakers, dress shoes and premium footwear.', SHOES, 'shoes')
-
-
-def accessories_page():
-    return _catalog_page('Accessories', 'Pick earrings, watches, bracelets, necklaces, men’s chains and women’s diamond rings for your companion.', ACCESSORIES, 'accessories')
-
+def clothing_page(): return _catalog_page('Clothing','Pick shirts and pants for your companion, from casual basics to premium tailored looks.',CLOTHING,'clothing')
+def shoes_page(): return _catalog_page('Shoes & Socks','Pick footwear and socks for your companion, including sandals, sneakers, dress shoes and premium footwear.',SHOES,'shoes')
+def accessories_page(): return _catalog_page('Accessories','Pick fashion, watches, earrings, bracelets, necklaces, chains and rings for your companion.',ACCESSORIES,'accessories')
 
 def styled_companion_page(name):
-    html = _original_companion_page(name)
-    panel = f'''<div id="wbu-current-look" class="card" style="margin:16px 0;padding:14px 16px"><strong>Current style selections</strong><div id="wbu-style-list" class="sub" style="margin-top:5px">No style items selected.</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><a href="/clothing" style="text-decoration:underline;color:#fff">Clothing</a><a href="/shoes" style="text-decoration:underline;color:#fff">Shoes</a><a href="/accessories" style="text-decoration:underline;color:#fff">Accessories</a></div></div><script>(function(){{let x=[];try{{x=JSON.parse(localStorage.getItem('wbu_style_{name}')||'[]')}}catch(e){{}}let el=document.getElementById('wbu-style-list');if(el&&x.length)el.textContent=x.map(v=>v.label).join(' · ');}})();</script>'''
-    marker = '<div id="history"></div>'
-    if marker in html:
-        html = html.replace(marker, panel + marker, 1)
-    else:
-        html = html.replace('</body>', panel + '</body>')
-    return html
-
-
-base.companion_page = styled_companion_page
-
+    html=_original_companion_page(name)
+    panel=f'''<div id="wbu-current-look" class="card" style="margin:16px 0;padding:14px 16px"><strong>Current style selections</strong><div id="wbu-style-list" class="sub" style="margin-top:5px">No style items selected.</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><a href="/clothing" style="text-decoration:underline;color:#fff">Clothing</a><a href="/shoes" style="text-decoration:underline;color:#fff">Shoes</a><a href="/accessories" style="text-decoration:underline;color:#fff">Accessories</a></div></div><script>(function(){{let x=[];try{{x=JSON.parse(localStorage.getItem('wbu_style_{name}')||'[]')}}catch(e){{}}let el=document.getElementById('wbu-style-list');if(el&&x.length)el.textContent=x.map(v=>v.label).join(' · ');}})();</script>'''
+    marker='<div id="history"></div>'
+    return html.replace(marker,panel+marker,1) if marker in html else html.replace('</body>',panel+'</body>')
+base.companion_page=styled_companion_page
 
 class PricingHandler(run_idle.run_analytics.AnalyticsHandler):
     def do_GET(self):
-        path = urlparse(self.path).path
-        if path == '/clothing':
-            return self.sh(clothing_page())
-        if path == '/shoes':
-            return self.sh(shoes_page())
-        if path == '/accessories':
-            return self.sh(accessories_page())
+        path=urlparse(self.path).path
+        if path=='/clothing': return self.sh(clothing_page())
+        if path=='/shoes': return self.sh(shoes_page())
+        if path=='/accessories': return self.sh(accessories_page())
         return super().do_GET()
 
-
-if __name__ == '__main__':
-    ThreadingHTTPServer(('0.0.0.0', base.PORT), PricingHandler).serve_forever()
+if __name__=='__main__': ThreadingHTTPServer(('0.0.0.0',base.PORT),PricingHandler).serve_forever()
