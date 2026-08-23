@@ -5,7 +5,8 @@ import run_wallet
 
 base = run_wallet.base
 
-# Real-money purchase: $5.00 buys $300 in non-cash virtual style money.
+# Real-money purchase: virtual style money is sold ONLY in $5.00 packs.
+# Each $5.00 pack buys $300 in non-cash virtual style money.
 # The Square payment link is configured in Railway and must only credit the wallet after verified payment.
 SQUARE_STYLE_TOPUP_URL = os.environ.get('SQUARE_STYLE_TOPUP_URL', '').strip()
 
@@ -19,10 +20,10 @@ def topup_catalog_page(title, subtitle, items, category):
   <div class="card" style="padding:20px;border:1px solid #57334a">
     <div class="grad">ADD VIRTUAL STYLE MONEY</div>
     <h2 style="margin:8px 0">$5.00 = $300 Virtual Style Money</h2>
-    <p class="sub" style="line-height:1.6">Active subscribers can add more virtual style money whenever they want. Pay $5.00 to receive $300 in What Bout Us™ virtual style money after the payment is confirmed.</p>
-    <a class="btn" href="/style-money/topup">Add $300 for $5</a>
+    <p class="sub" style="line-height:1.6">Virtual style money is sold only in $5.00 packs. Each $5.00 real-money payment adds $300 in What Bout Us™ virtual style money after the payment is confirmed. No custom amounts such as $4.00 or $6.00 are offered.</p>
+    <a class="btn" href="/style-money/topup">Buy One $5 Pack</a>
     <a class="btn alt" href="/plans-virtual-money" style="margin-left:8px">How Plans &amp; Virtual Money Work</a>
-    <p class="sub" style="font-size:12px;margin-top:10px">Virtual style money has no cash value, cannot be withdrawn, transferred for cash, or exchanged for real currency.</p>
+    <p class="sub" style="font-size:12px;margin-top:10px">Want more? Buy additional $5.00 packs. Two $5.00 packs = $10.00 and add $600 virtual style money. Virtual style money has no cash value, cannot be withdrawn, transferred for cash, or exchanged for real currency.</p>
   </div>
 </section>
 '''
@@ -36,7 +37,7 @@ _original_home = base.home
 
 def topup_home():
     html = _original_home()
-    note = '''<section style="max-width:980px;margin:20px auto;padding:0 18px"><div class="card" style="padding:18px 20px"><strong>Plans &amp; Virtual Style Money</strong><p class="sub" style="margin:7px 0 12px">See how much virtual style money comes with each configured plan, how wardrobe spending works, and how subscribers can add $300 more for $5.00.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="/plans-virtual-money">View Plans &amp; Virtual Money</a><a class="btn alt" href="/style-money/topup">Add Virtual Money</a></div></div></section>'''
+    note = '''<section style="max-width:980px;margin:20px auto;padding:0 18px"><div class="card" style="padding:18px 20px"><strong>Plans &amp; Virtual Style Money</strong><p class="sub" style="margin:7px 0 12px">See how much virtual style money comes with each configured plan, how wardrobe spending works, and how subscribers can buy additional virtual money in $5.00 packs. Each $5.00 pack adds $300 virtual style money.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="/plans-virtual-money">View Plans &amp; Virtual Money</a><a class="btn alt" href="/style-money/topup">Add Virtual Money</a></div></div></section>'''
     marker = '<section style="max-width:980px;margin:54px auto 24px;padding:0 18px;text-align:center">'
     return html.replace(marker, note + marker, 1) if marker in html else html
 base.home = topup_home
@@ -82,9 +83,10 @@ def plans_virtual_money_page():
   <section style="max-width:1000px;margin:0 auto 28px">
     <div class="card" style="padding:24px;border:1px solid #57334a">
       <div class="grad">NEED MORE?</div>
-      <h2 style="margin:8px 0">Add $300 Virtual for $5.00</h2>
-      <p class="sub" style="line-height:1.7">Active subscribers can purchase additional virtual style money. A $5.00 real-money payment adds $300 in virtual style money to the subscriber's wallet after the payment is confirmed.</p>
-      <a class="btn" href="/style-money/topup">Add $300 for $5</a>
+      <h2 style="margin:8px 0">Buy Virtual Money in $5.00 Packs</h2>
+      <p class="sub" style="line-height:1.7">Active subscribers can purchase additional virtual style money only in $5.00 increments. Each $5.00 real-money payment adds $300 virtual style money after the payment is confirmed. There are no custom top-up amounts such as $4.00 or $6.00.</p>
+      <p class="sub" style="line-height:1.7"><strong>$5.00 = $300 virtual</strong> · <strong>$10.00 = $600 virtual</strong> by purchasing two $5.00 packs · <strong>$15.00 = $900 virtual</strong> by purchasing three $5.00 packs.</p>
+      <a class="btn" href="/style-money/topup">Buy a $5 Pack</a>
       <p class="sub" style="font-size:12px;line-height:1.6;margin-top:12px">Virtual style money is for What Bout Us™ companion clothing, shoes and accessories only. It has no cash value, cannot be withdrawn, cannot be transferred for cash and cannot be exchanged for real currency.</p>
     </div>
   </section>
@@ -110,7 +112,7 @@ class TopupHandler(run_wallet.WalletHandler):
                 self.send_header('Location', SQUARE_STYLE_TOPUP_URL)
                 self.end_headers()
                 return
-            return self.sh(base.page('Add Virtual Style Money — What Bout Us™', '<main class="shell"><div class="card"><div class="grad">VIRTUAL STYLE MONEY</div><h1>$5.00 = $300 Virtual</h1><p class="sub">This top-up option is ready, but the secure Square payment link still needs to be connected before purchases can be processed.</p><a class="btn alt" href="/plans-virtual-money">How Plans &amp; Virtual Money Work</a></div>'+base.footer()+'</main>'))
+            return self.sh(base.page('Add Virtual Style Money — What Bout Us™', '<main class="shell"><div class="card"><div class="grad">VIRTUAL STYLE MONEY</div><h1>$5.00 Pack = $300 Virtual</h1><p class="sub">Virtual money is sold only in $5.00 packs. No custom amounts such as $4.00 or $6.00 are offered. The secure Square payment link still needs to be connected before purchases can be processed.</p><a class="btn alt" href="/plans-virtual-money">How Plans &amp; Virtual Money Work</a></div>'+base.footer()+'</main>'))
         return super().do_GET()
 
 
