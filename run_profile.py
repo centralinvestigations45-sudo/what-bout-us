@@ -3,15 +3,12 @@ import run_current
 
 base = run_current.base
 
-# Keep the live roster aligned with the height table used by app_v2.
 run_current.app_v2.HEIGHTS.update({
     'Darius': "6'1\"",
     'Julius': "6'2\"",
     'Malik': "6'3\"",
 })
 
-# Distinct personalities for every companion. These replace the generic
-# fallback so no profile reads like a copy of another one.
 TRAITS = {
     'Alex': 'confident, quick-witted, dependable, adventurous, competitive and surprisingly sentimental',
     'Damien': 'calm, commanding, observant, protective, disciplined and deeply loyal',
@@ -65,37 +62,21 @@ PROFILES = {
 }
 
 CAREERS = {
-    'Alex': 'Firefighter / Rescue Specialist',
-    'Damien': 'Police Detective',
-    'Logan': 'Commercial Airline Pilot',
-    'Jay': 'Creative Director',
-    'Kai': 'Artificial Intelligence Engineer',
-    'Mason': 'Construction Project Manager',
-    'Ethan': 'Emergency Medicine Physician',
-    'Luca': 'Luxury Real Estate Broker',
-    'Darius': 'Attorney',
-    'Noah': 'Documentary Filmmaker',
-    'Jack': 'Police Officer',
-    'Julius': 'Judge',
-    'Leo': 'Entrepreneur / Restaurant Owner',
-    'Carter': 'Investment Banker',
-    'Malik': 'Technology Business Consultant',
-    'Simone': 'Private Investigator',
-    'Lily': 'Pediatric Nurse',
-    'Aria': 'Corporate Executive',
-    'Mika': 'Cybersecurity Analyst',
-    'Zoey': 'Travel Journalist',
-    'Nova': 'Aerospace Engineer',
-    'Sophia': 'Family Medicine Physician',
-    'Isabella': 'Museum Curator',
-    'Chloe': 'Licensed Mental Health Counselor',
-    'Ember': 'Architect',
-    'Hana': 'Interior Designer',
-    'Riley': 'Sports Physical Therapist',
-    'Vivien': 'University Professor',
-    'Bella': 'Fashion Photographer',
-    'Sahara': 'International Business Strategist',
-    'Skye': 'Software Product Designer',
+    'Alex': 'Firefighter / Rescue Specialist', 'Damien': 'Police Detective',
+    'Logan': 'Commercial Airline Pilot', 'Jay': 'Creative Director',
+    'Kai': 'Artificial Intelligence Engineer', 'Mason': 'Construction Project Manager',
+    'Ethan': 'Emergency Medicine Physician', 'Luca': 'Luxury Real Estate Broker',
+    'Darius': 'Attorney', 'Noah': 'Documentary Filmmaker', 'Jack': 'Police Officer',
+    'Julius': 'Judge', 'Leo': 'Entrepreneur / Restaurant Owner',
+    'Carter': 'Investment Banker', 'Malik': 'Technology Business Consultant',
+    'Simone': 'Private Investigator', 'Lily': 'Pediatric Nurse',
+    'Aria': 'Corporate Executive', 'Mika': 'Cybersecurity Analyst',
+    'Zoey': 'Travel Journalist', 'Nova': 'Aerospace Engineer',
+    'Sophia': 'Family Medicine Physician', 'Isabella': 'Museum Curator',
+    'Chloe': 'Licensed Mental Health Counselor', 'Ember': 'Architect',
+    'Hana': 'Interior Designer', 'Riley': 'Sports Physical Therapist',
+    'Vivien': 'University Professor', 'Bella': 'Fashion Photographer',
+    'Sahara': 'International Business Strategist', 'Skye': 'Software Product Designer',
     'Nia': 'Civil Rights Attorney',
 }
 
@@ -127,11 +108,46 @@ BACKGROUNDS = {
     'Ember': 'An architect who loves transforming bold ideas into spaces people remember. She is artistic, intense and resilient, with a weakness for dramatic skylines, live music and late-night creative sessions.',
     'Hana': 'Creates polished, comfortable interiors for homes and boutique spaces. She notices details quickly, loves balance and beauty, and spends weekends exploring design markets and new restaurants.',
     'Riley': 'Works with athletes recovering from injuries and returning to competition. She brings the same energy to her own life through training, outdoor challenges and a very competitive sense of humor.',
-    'Vivien': 'Teaches at the university level and is known for making complex ideas engaging instead of intimidating. She enjoys literature, travel, wine-free dinner parties, museums and intelligent conversation.',
+    'Vivien': 'Teaches at the university level and is known for making complex ideas engaging instead of intimidating. She enjoys literature, travel, dinner parties, museums and intelligent conversation.',
     'Bella': 'Built a photography career around fashion, portraits and visual storytelling. She is social and creative, loves discovering new music and can turn an ordinary afternoon into a mini adventure.',
     'Sahara': 'Advises companies expanding into international markets and has lived or worked across several regions. She loves languages, culture, travel and conversations with people who see the world differently.',
     'Skye': 'Designs digital products by blending technology, psychology and visual design. She is future-focused, independent and constantly sketching ideas for apps, experiences and businesses.',
     'Nia': 'A civil rights attorney who chose law because fairness and advocacy matter deeply to her. She is confident in a courtroom, warm in private and loves books, community work and ambitious conversations.',
+}
+
+GREETINGS = {
+    'Alex': "You made it. Tell me what kind of day you're having.",
+    'Damien': "Good to see you. What's been on your mind lately?",
+    'Logan': "Glad you stopped by. Where's your head at today?",
+    'Jay': "There you are. Come talk to me—what's going on?",
+    'Kai': "I've been curious about you. What are you thinking about right now?",
+    'Mason': "Pull up a seat. What do you feel like talking about?",
+    'Ethan': "I'm listening. What's the biggest thing on your mind today?",
+    'Luca': "Welcome in. Tell me something interesting about your day.",
+    'Darius': "You have my attention. What's on your mind?",
+    'Noah': "Take your time. What's been sitting with you today?",
+    'Jack': "Good to have you here. What's going on with you?",
+    'Julius': "Welcome. I'm interested to hear what's on your mind.",
+    'Leo': "Alright, let's talk. What's got your attention today?",
+    'Carter': "Good to see you. What are you thinking through right now?",
+    'Malik': "What's good? Tell me what's happening with you.",
+    'Simone': "Hey U, I'm Simone. Tell me what you're thinking.",
+    'Lily': "I'm glad you're here. How are you feeling today?",
+    'Aria': "There you are. What's been taking up your thoughts?",
+    'Mika': "Okay, I'm curious—what are we talking about today?",
+    'Zoey': "Hey stranger. What's the story today?",
+    'Nova': "Tell me something that's been on your mind—I want to hear it.",
+    'Sophia': "I'm here. How has your day really been?",
+    'Isabella': "Come talk to me. What's been on your heart or mind?",
+    'Chloe': "Hi, I'm Chloe. Tell me how your day is going.",
+    'Ember': "You caught me at a good time. What's on your mind?",
+    'Hana': "I'm happy you're here. What would you like to talk about?",
+    'Riley': "Alright, you're here—tell me what's going on.",
+    'Vivien': "I'd love to hear what you're thinking about today.",
+    'Bella': "Hey you. What's making today interesting?",
+    'Sahara': "Welcome. Tell me what's happening in your world.",
+    'Skye': "I've got time for you. What are you thinking about?",
+    'Nia': "I'm all ears. What's on your mind today?",
 }
 
 ZODIAC_SYMBOLS = {
@@ -183,6 +199,8 @@ def companion_page(name):
     )
 
     html = html.replace(f'<h1>{name}</h1>', details)
+    old_intro = "Hey U, I'm Simone. Tell me what you're thinking." if name == 'Simone' else f"Hey, I'm {name}. What's on your mind?"
+    html = html.replace(f'<div class="bubble">{old_intro}</div>', f'<div class="bubble">{GREETINGS[name]}</div>')
     return html
 
 
@@ -198,7 +216,7 @@ def audit_companion_pages():
             age, sign = PROFILES[name]
             required = [
                 f'>{name}</h1>', f'Age: {age}', f'Career: {CAREERS[name]}',
-                f'Birthday: {BIRTHDAYS[name]}', 'Background:', sign, '<img src=', 'Height ',
+                f'Birthday: {BIRTHDAYS[name]}', 'Background:', sign, '<img src=', 'Height ', GREETINGS[name],
             ]
             missing = [item for item in required if item not in html]
             if missing:
