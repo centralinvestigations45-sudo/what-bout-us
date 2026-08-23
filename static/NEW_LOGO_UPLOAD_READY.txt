@@ -1,0 +1,1 @@
+The newly recreated What Bout Us logo is ready for binary PNG replacement in v11. Do not use the previously corrupted logo payload.
