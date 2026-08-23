@@ -39,6 +39,11 @@ def annual_home():
     html = html.replace(plus_old, plus_new)
     html = html.replace(unlimited_old, unlimited_new)
 
+    # Fill the large gap below the yearly plans with a visible safety notice.
+    footer_html = base.footer()
+    safety_notice = '''<section style="max-width:980px;margin:54px auto 24px;padding:0 18px;text-align:center"><div style="background:#131319;border:1px solid #3b3b45;border-radius:18px;padding:22px 20px"><div style="font-size:13px;font-weight:900;letter-spacing:1px;color:#d36580;margin-bottom:8px">SAFETY &amp; CONTENT POLICY</div><p class="sub" style="margin:0 auto 12px;max-width:820px;line-height:1.6">What Bout Us™ is for adults age 21 and older. Sexual content involving minors — including babies, children, teenagers, or any person under 18 — is never allowed. Sexual content involving any and all animals, including wildlife, is also never allowed. Our companions do not encourage suicide, self-harm, threats, or violence toward others and should shift to safety-focused support when a conversation indicates immediate danger.</p><a href="/safety" style="font-weight:800;text-decoration:underline;color:#fff">Read the full Safety &amp; Content Policy</a></div></section>'''
+    html = html.replace(footer_html, safety_notice + footer_html, 1)
+
     player = f'''
 <div id="wbu-jingle-player" style="position:fixed;left:14px;right:14px;bottom:14px;z-index:9999;max-width:520px;margin:auto;background:#131319ee;border:1px solid #3b3b45;border-radius:18px;padding:12px 14px;box-shadow:0 10px 35px #0009;backdrop-filter:blur(12px)">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
