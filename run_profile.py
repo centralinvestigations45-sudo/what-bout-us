@@ -37,12 +37,14 @@ PROFILES = {
     'Bella': (24, '♓', 'Pisces'),
     'Sahara': (35, '♐', 'Sagittarius'),
     'Skye': (28, '♒', 'Aquarius'),
-    'Nia': (32, '♉', 'Taurus'),
+    'Nia': (32, '♎', 'Libra'),
 }
 
 BIRTHDAYS = {
     'Simone': 'October 15',
     'Chloe': 'August 6',
+    'Hana': 'October 6',
+    'Nia': 'October 16',
 }
 
 SIGN_STYLE = 'font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 10px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)'
