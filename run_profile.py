@@ -5,19 +5,66 @@ base = run_current.base
 
 _original_companion_page = base.companion_page
 
+PROFILES = {
+    'Alex': (30, '♈', 'Aries'),
+    'Damien': (36, '♏', 'Scorpio'),
+    'Logan': (29, '♐', 'Sagittarius'),
+    'Jay': (27, '♊', 'Gemini'),
+    'Kai': (31, '♒', 'Aquarius'),
+    'Mason': (35, '♉', 'Taurus'),
+    'Ethan': (32, '♍', 'Virgo'),
+    'Luca': (28, '♌', 'Leo'),
+    'Darius': (38, '♑', 'Capricorn'),
+    'Noah': (26, '♓', 'Pisces'),
+    'Jack': (34, '♋', 'Cancer'),
+    'Julius': (41, '♒', 'Aquarius'),
+    'Leo': (30, '♌', 'Leo'),
+    'Carter': (33, '♈', 'Aries'),
+    'Malik': (29, '♎', 'Libra'),
+    'Simone': (33, '⚖️', 'Libra'),
+    'Lily': (27, '♓', 'Pisces'),
+    'Aria': (31, '♉', 'Taurus'),
+    'Mika': (25, '♊', 'Gemini'),
+    'Zoey': (29, '♐', 'Sagittarius'),
+    'Nova': (32, '♒', 'Aquarius'),
+    'Sophia': (34, '♍', 'Virgo'),
+    'Isabella': (30, '♋', 'Cancer'),
+    'Chloe': (28, '♌', 'Leo'),
+    'Ember': (33, '♏', 'Scorpio'),
+    'Hana': (26, '♎', 'Libra'),
+    'Riley': (31, '♈', 'Aries'),
+    'Vivien': (37, '♑', 'Capricorn'),
+    'Bella': (24, '♓', 'Pisces'),
+    'Sahara': (35, '♐', 'Sagittarius'),
+    'Skye': (28, '♒', 'Aquarius'),
+    'Nia': (32, '♉', 'Taurus'),
+}
+
+SIGN_STYLE = 'font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 10px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)'
+
 
 def companion_page(name):
     html = _original_companion_page(name)
+    profile = PROFILES.get(name)
+    if not profile:
+        return html
+
+    age, symbol, sign = profile
+    details = (
+        f'<h1 style="margin-bottom:4px">{name}</h1>'
+        f'<div style="{SIGN_STYLE}">{symbol} {sign}</div>'
+        f'<div style="font-size:17px;font-weight:700;margin:0 0 12px">Age: {age}</div>'
+    )
+
     if name == 'Simone':
-        # Highlight Libra directly under Simone's name while keeping the existing page intact.
-        html = html.replace(
-            '<h1>Simone</h1>',
-            '<h1 style="margin-bottom:4px">Simone</h1>'
-            '<div style="font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 14px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)">⚖️ Libra</div>'
+        details += (
             '<div style="font-size:17px;font-weight:700;margin:0 0 8px">Career: Private Investigator</div>'
             '<div style="font-size:16px;color:#c9c9cf;margin:0 0 16px">Birthday: October 15</div>'
         )
+
+    html = html.replace(f'<h1>{name}</h1>', details)
     return html
+
 
 base.companion_page = companion_page
 
