@@ -40,6 +40,11 @@ PROFILES = {
     'Nia': (32, '♉', 'Taurus'),
 }
 
+BIRTHDAYS = {
+    'Simone': 'October 15',
+    'Chloe': 'August 6',
+}
+
 SIGN_STYLE = 'font-family:Georgia,Times New Roman,serif;font-size:27px;font-style:italic;font-weight:700;letter-spacing:2px;margin:0 0 10px;background:linear-gradient(90deg,#63d7ff,#d45fff,#ff688e);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(212,95,255,.24)'
 
 
@@ -57,10 +62,11 @@ def companion_page(name):
     )
 
     if name == 'Simone':
-        details += (
-            '<div style="font-size:17px;font-weight:700;margin:0 0 8px">Career: Private Investigator</div>'
-            '<div style="font-size:16px;color:#c9c9cf;margin:0 0 16px">Birthday: October 15</div>'
-        )
+        details += '<div style="font-size:17px;font-weight:700;margin:0 0 8px">Career: Private Investigator</div>'
+
+    birthday = BIRTHDAYS.get(name)
+    if birthday:
+        details += f'<div style="font-size:16px;color:#c9c9cf;margin:0 0 16px">Birthday: {birthday}</div>'
 
     html = html.replace(f'<h1>{name}</h1>', details)
     return html
