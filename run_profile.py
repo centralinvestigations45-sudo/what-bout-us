@@ -3,6 +3,10 @@ import run_current
 
 base = run_current.base
 
+# Swap Chloe and Lily's positions in the women's roster.
+base.WOMEN = ['Chloe','Aria','Mika','Zoey','Nova','Sophia','Isabella','Lily','Ember','Hana','Riley','Vivien','Bella','Sahara','Skye','Nia']
+base.ALL = base.MEN + base.WOMEN
+
 run_current.app_v2.HEIGHTS.update({
     'Darius': "6'1\"",
     'Julius': "6'2\"",
