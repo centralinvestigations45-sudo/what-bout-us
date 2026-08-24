@@ -16,6 +16,10 @@ def subscription_plans(name):
     return f'''<div class="card" style="margin-top:18px"><h2>Choose Your {safe_name} Plan</h2><p class="sub">Pick the option that works best for you.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px"><div class="plan"><h3>WHAT BOUT US™+</h3><div class="price" style="font-size:30px">$9.99 <small>/ month</small></div><a class="btn alt" href="/checkout?plan=plus">Choose $9.99</a></div><div class="plan hot"><h3>UNLIMITED</h3><div class="price" style="font-size:30px">$14.99 <small>/ month</small></div><a class="btn" href="/checkout?plan=unlimited">Choose $14.99</a></div><div class="plan"><h3>UNLIMITED YEARLY</h3><div class="price" style="font-size:30px">$149.99 <small>/ year</small></div><a class="btn alt" href="/checkout?plan=unlimited_yearly">Choose $149.99</a></div></div></div>'''
 
 
+def account_access():
+    return '''<div class="card" style="margin-top:18px"><h2>Your What Bout Us™ Account</h2><p class="sub">Sign in to continue with your account, or create one to get started.</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px"><a class="btn" href="/account">Sign In</a><a class="btn alt" href="/account">Sign Up</a></div></div>'''
+
+
 def companion_page_with_nia_test(name):
     html = _original_companion_page(name)
 
@@ -49,13 +53,13 @@ def companion_page_with_nia_test(name):
         speech = f'''if(N==="Simone")say(d.reply);try{{let u=new SpeechSynthesisUtterance(d.reply),vs=speechSynthesis.getVoices().filter(x=>/^en/i.test(x.lang)),v=vs.find(x=>/{voice_pattern}/i.test(x.name))||vs.find(x=>/^en-US/i.test(x.lang))||vs[0];if(v)u.voice=v;u.rate=.92;u.pitch={pitch};speechSynthesis.cancel();speechSynthesis.speak(u)}}catch(e){{}}'''
         html = html.replace('if(N==="Simone")say(d.reply);', speech)
 
-    # Give every companion the same three payment choices.
-    plans = subscription_plans(name)
+    # Give every companion the same three payment choices plus account access.
+    panels = account_access() + subscription_plans(name)
     marker = '<div class="fine">© 2026 What Bout Us'
     if marker in html:
-        html = html.replace(marker, plans + marker, 1)
+        html = html.replace(marker, panels + marker, 1)
     else:
-        html = html.replace('</main>', plans + '</main>', 1)
+        html = html.replace('</main>', panels + '</main>', 1)
     return html
 
 
