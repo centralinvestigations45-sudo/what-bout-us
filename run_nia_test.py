@@ -8,6 +8,7 @@ app_v2.FREE.add('Nia')
 
 _original_companion_page = run_faces.base.companion_page
 _original_page = run_faces.base.page
+_original_home = run_faces.base.home
 
 
 def crisp_page(title, body):
@@ -19,6 +20,29 @@ def crisp_page(title, body):
     return html.replace('</head>', css + '</head>', 1)
 
 run_faces.base.page = crisp_page
+
+
+def reordered_home():
+    html = _original_home()
+    start = html.find('<section style="max-width:980px;margin:22px auto;padding:0 18px"><div class="card" style="padding:22px"><div class="grad">WHAT BOUT US™ COLLECTION 01</div>')
+    if start == -1:
+        return html
+    end = html.find('</section>', start)
+    if end == -1:
+        return html
+    end += len('</section>')
+    collection = html[start:end]
+    html = html[:start] + html[end:]
+    plans_start = html.find('<section style="max-width:980px;margin:20px auto;padding:0 18px"><div class="card" style="padding:18px 20px"><strong>Plans &amp; Virtual Style Money</strong>')
+    if plans_start == -1:
+        return html
+    plans_end = html.find('</section>', plans_start)
+    if plans_end == -1:
+        return html
+    plans_end += len('</section>')
+    return html[:plans_end] + collection + html[plans_end:]
+
+run_faces.base.home = reordered_home
 
 
 def subscription_plans(name):
