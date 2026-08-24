@@ -1,11 +1,16 @@
 from http.server import ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 import mimetypes
+import os
 import run_brand
 
 base = run_brand.base
 STATIC = Path(__file__).resolve().parent / 'static'
+
+# Live Square checkout routes for the two Unlimited plans.
+SQUARE_UNLIMITED_URL = os.environ.get('SQUARE_UNLIMITED_URL', '').strip()
+SQUARE_UNLIMITED_YEARLY_URL = os.environ.get('SQUARE_UNLIMITED_YEARLY_URL', '').strip()
 
 STANDALONE = {
     'Simone': 'simone.jpg', 'Chloe': 'chloe.jpg', 'Darius': 'darius.jpg',
@@ -28,7 +33,24 @@ base.page = face_page
 
 class FacesHandler(run_brand.BrandedHandler):
     def do_GET(self):
-        path = urlparse(self.path).path
+        u = urlparse(self.path)
+        path = u.path
+
+        # Route Unlimited plan buttons directly to their correct Square subscriptions.
+        if path == '/checkout':
+            plan = parse_qs(u.query).get('plan', [''])[0]
+            target = ''
+            if plan == 'unlimited':
+                target = SQUARE_UNLIMITED_URL
+            elif plan == 'unlimited-yearly':
+                target = SQUARE_UNLIMITED_YEARLY_URL
+            if target:
+                self.send_response(302)
+                self.send_header('Location', target)
+                self.send_header('Cache-Control', 'no-store')
+                self.end_headers()
+                return
+
         if path.startswith('/static/'):
             rel = path[len('/static/'):]
             allowed = set(STANDALONE.values()) | {'roster_sprite.svg'}
