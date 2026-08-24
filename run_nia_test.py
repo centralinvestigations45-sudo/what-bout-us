@@ -7,6 +7,18 @@ app_v2 = run_faces.run_brand.app_v2
 app_v2.FREE.add('Nia')
 
 _original_companion_page = run_faces.base.companion_page
+_original_page = run_faces.base.page
+
+
+def crisp_page(title, body):
+    html = _original_page(title, body)
+    css = '''<style>
+.avatar{width:64px!important;height:64px!important}.avatar img{width:64px!important;height:64px!important;object-fit:cover!important;display:block!important;image-rendering:auto!important;filter:contrast(1.04) saturate(1.03)}
+.bigavatar{width:96px!important;height:96px!important}.bigavatar img{width:96px!important;height:96px!important;object-fit:cover!important;display:block!important;image-rendering:auto!important;filter:contrast(1.04) saturate(1.03)}
+</style>'''
+    return html.replace('</head>', css + '</head>', 1)
+
+run_faces.base.page = crisp_page
 
 
 def subscription_plans(name):
@@ -23,12 +35,18 @@ def companion_page(name):
     html = _original_companion_page(name)
 
     if name == 'Simone':
+        # Keep Simone's existing voice path untouched. Owner testing should have no countdown.
         html = html.replace(
             'function guestState(){let x=Number(localStorage.getItem(G)||0);if(!x)return 120;return Math.max(0,120-Math.floor((Date.now()-x)/1000))}',
             'function guestState(){if(N==="Simone")return 86400;let x=Number(localStorage.getItem(G)||0);if(!x)return 120;return Math.max(0,120-Math.floor((Date.now()-x)/1000))}'
         )
+        html = html.replace('if(!started)timer(r)', 'if(!started&&N!=="Simone")timer(r)')
         html = html.replace(' · 2-minute free demo', ' · OWNER TEST UNLOCKED', 1)
-        html = html.replace('Free demo starts with your first message.', 'Owner test mode · no charge', 1)
+        html = html.replace('Free demo starts with your first message.', 'Owner test mode · no countdown', 1)
+        # Put Simone's plan choices above the conversation so they are impossible to miss.
+        anchor = '<div class="card"><div class="profile">'
+        if anchor in html:
+            html = html.replace(anchor, subscription_plans(name) + anchor, 1)
 
     if name == 'Nia':
         html = html.replace('N==="Simone"||N==="Chloe"','N==="Simone"||N==="Chloe"||N==="Nia"')
@@ -50,7 +68,7 @@ def companion_page(name):
         speech = f'''if(N==="Simone")say(d.reply);try{{let u=new SpeechSynthesisUtterance(d.reply),vs=speechSynthesis.getVoices().filter(x=>/^en/i.test(x.lang)),v=vs.find(x=>/{pattern}/i.test(x.name))||vs.find(x=>/^en-US/i.test(x.lang))||vs[0];if(v)u.voice=v;u.rate=.92;u.pitch={pitch};speechSynthesis.cancel();speechSynthesis.speak(u)}}catch(e){{}}'''
         html = html.replace('if(N==="Simone")say(d.reply);', speech)
 
-    panels = account_access() + subscription_plans(name)
+    panels = account_access() + ('' if name == 'Simone' else subscription_plans(name))
     marker = '<div class="fine">© 2026 What Bout Us'
     if marker in html:
         html = html.replace(marker, panels + marker, 1)
@@ -83,7 +101,7 @@ class Handler(run_faces.FacesHandler):
                 if generic:
                     self.send_response(302); self.send_header('Location', generic); self.end_headers(); return
                 safe = run_faces.base.esc(companion or 'this companion')
-                body = f'''<main class="shell"><div class="card" style="max-width:700px;margin:40px auto"><h1>$9.99 Checkout</h1><p class="lead">We are correcting the $9.99 checkout for {safe} so you are not sent to Nia's payment page.</p><p class="sub">Please use the $14.99 monthly or $149.99 yearly option for now.</p><a class="btn" href="/checkout?plan=unlimited&companion={quote(companion, safe='')}">Choose $14.99/month</a> <a class="btn alt" href="/checkout?plan=unlimited_yearly&companion={quote(companion, safe='')}">Choose $149.99/year</a></div>{run_faces.base.footer()}</main>'''
+                body = f'''<main class="shell"><div class="card" style="max-width:700px;margin:40px auto"><h1>$9.99 Checkout</h1><p class="lead">The generic $9.99 What Bout Us™ checkout for {safe} is being connected.</p><p class="sub">The $14.99 monthly and $149.99 yearly Square checkouts are available now.</p><a class="btn" href="/checkout?plan=unlimited&companion={quote(companion, safe='')}">Choose $14.99/month</a> <a class="btn alt" href="/checkout?plan=unlimited_yearly&companion={quote(companion, safe='')}">Choose $149.99/year</a></div>{run_faces.base.footer()}</main>'''
                 return self.sh(run_faces.base.page('Checkout — What Bout Us™', body))
 
         return super().do_GET()
