@@ -13,6 +13,7 @@ COPY run_wallet.py /app/run_wallet.py
 COPY run_topup.py /app/run_topup.py
 COPY run_brand.py /app/run_brand.py
 COPY run_faces.py /app/run_faces.py
+COPY run_nia_test.py /app/run_nia_test.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_faces.py"]
+CMD ["python", "run_nia_test.py"]
