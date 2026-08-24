@@ -9,7 +9,7 @@ STATIC = Path(__file__).resolve().parent / 'static'
 
 STANDALONE = {
     'Simone': 'simone.jpg', 'Chloe': 'chloe.jpg', 'Darius': 'darius.jpg',
-    'Isabella': 'isabella.jpg', 'Julius': 'julius.jpg', 'Nia': 'nia.jpg',
+    'Isabella': 'isabella.jpg', 'Julius': 'julius.jpg', 'Malik': 'malik.jpg', 'Nia': 'nia.jpg',
 }
 SPRITE_NAMES = [
     'Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Noah','Jack','Leo','Carter',
@@ -23,8 +23,6 @@ def portrait(name):
         return '/static/' + STANDALONE[name] + '?v=19'
     if name in SPRITE_POS:
         return '/portrait/' + name.lower() + '.svg?v=19'
-    if name == 'Malik' and (STATIC / 'malik.jpg').exists():
-        return '/static/malik.jpg?v=19'
     return _original_portrait(name)
 base.portrait = portrait
 
