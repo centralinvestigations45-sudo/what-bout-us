@@ -34,6 +34,12 @@ def companion_page_with_nia_test(name):
         html = html.replace(' · 2-minute free demo', ' · OWNER TEST UNLOCKED')
         html = html.replace('Free demo starts with your first message.', 'Owner test mode · no charge')
 
+        # Nia should speak her replies too. Use the device's English female voice when available.
+        html = html.replace(
+            'if(N==="Simone")say(d.reply);',
+            '''if(N==="Simone")say(d.reply);if(N==="Nia"){try{let u=new SpeechSynthesisUtterance(d.reply),vs=speechSynthesis.getVoices(),v=vs.find(x=>/Samantha|Ava|Allison|Serena|female/i.test(x.name)&&/^en/i.test(x.lang))||vs.find(x=>/^en-US/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));if(v)u.voice=v;u.rate=.92;u.pitch=1.08;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}'''
+        )
+
     # Give every companion the same three payment choices.
     plans = subscription_plans(name)
     marker = '<div class="fine">© 2026 What Bout Us'
