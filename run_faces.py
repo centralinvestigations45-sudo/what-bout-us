@@ -1,8 +1,11 @@
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from io import BytesIO
+import base64
 import mimetypes
 import re
+from PIL import Image
 import run_brand
 
 base = run_brand.base
@@ -18,61 +21,69 @@ SPRITE_NAMES = [
 ]
 SPRITE_POS = {name: ((i % 5) * 64, (i // 5) * 64) for i, name in enumerate(SPRITE_NAMES)}
 _original_portrait = base.portrait
+_portrait_cache = {}
 
 def portrait(name):
     if name in STANDALONE:
-        return '/static/' + STANDALONE[name] + '?v=20'
+        return '/static/' + STANDALONE[name] + '?v=21'
     if name in SPRITE_POS:
-        return '/portrait/' + name.lower() + '.svg?v=20'
+        return '/portrait/' + name.lower() + '.jpg?v=21'
     return _original_portrait(name)
 base.portrait = portrait
 
 _old_page = base.page
 def face_page(title, body):
     html = _old_page(title, body)
-    css = '<style>.avatar img,.bigavatar img{width:100%;height:100%;object-fit:cover;display:block;backface-visibility:hidden}.avatar{width:78px;height:78px;overflow:hidden}.bigavatar{width:160px;height:160px;overflow:hidden}@media(max-width:480px){.avatar{width:74px;height:74px}}</style>'
+    css = '<style>.avatar img,.bigavatar img{width:100%;height:100%;object-fit:cover;display:block}.avatar{width:78px;height:78px;overflow:hidden}.bigavatar{width:160px;height:160px;overflow:hidden}@media(max-width:480px){.avatar{width:74px;height:74px}}</style>'
     return html.replace('</head>', css + '</head>', 1)
 base.page = face_page
 
-def self_contained_portrait(name):
-    """Return a standalone SVG crop with the sprite's embedded JPEG intact.
-    This avoids Safari/iOS having to load an external SVG from inside another SVG.
-    """
-    sprite_path = STATIC / 'roster_sprite.svg'
-    if not sprite_path.exists():
+def sprite_jpeg():
+    text = (STATIC / 'roster_sprite.svg').read_text(encoding='utf-8')
+    match = re.search(r'<image[^>]+href=["\']data:image/jpeg;base64,([^"\']+)', text, re.I | re.S)
+    if not match:
+        return None
+    return base64.b64decode(re.sub(r'\s+', '', match.group(1)))
+
+def individual_portrait(name):
+    if name in _portrait_cache:
+        return _portrait_cache[name]
+    raw = sprite_jpeg()
+    if not raw:
         return None
     x, y = SPRITE_POS[name]
-    text = sprite_path.read_text(encoding='utf-8')
-    # Make the sprite itself the portrait document and crop by viewBox.
-    text = re.sub(r'<svg\b[^>]*>',
-                  f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="{x} {y} 64 64" preserveAspectRatio="xMidYMid slice">',
-                  text, count=1)
-    return text.encode('utf-8')
+    with Image.open(BytesIO(raw)) as sheet:
+        crop = sheet.convert('RGB').crop((x, y, x + 64, y + 64)).resize((512, 512), Image.Resampling.LANCZOS)
+        out = BytesIO()
+        crop.save(out, format='JPEG', quality=92, optimize=True)
+        data = out.getvalue()
+    _portrait_cache[name] = data
+    return data
 
 class FacesHandler(run_brand.BrandedHandler):
     def do_GET(self):
         path = urlparse(self.path).path
-        if path.startswith('/portrait/') and path.endswith('.svg'):
-            key = path.rsplit('/',1)[-1][:-4]
+        if path.startswith('/portrait/') and path.endswith('.jpg'):
+            key = path.rsplit('/', 1)[-1][:-4]
             name = next((n for n in SPRITE_NAMES if n.lower() == key), None)
             if name:
-                svg = self_contained_portrait(name)
-                if svg:
+                data = individual_portrait(name)
+                if data:
                     self.send_response(200)
-                    self.send_header('Content-Type','image/svg+xml; charset=utf-8')
-                    self.send_header('Cache-Control','public, max-age=3600')
-                    self.send_header('X-Content-Type-Options','nosniff')
-                    self.send_header('Content-Length',str(len(svg)))
-                    self.end_headers(); self.wfile.write(svg); return
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Cache-Control', 'public, max-age=86400')
+                    self.send_header('X-Content-Type-Options', 'nosniff')
+                    self.send_header('Content-Length', str(len(data)))
+                    self.end_headers(); self.wfile.write(data); return
         if path.startswith('/static/'):
             rel = path[len('/static/'):]
             allowed = set(STANDALONE.values()) | {'roster_sprite.svg'}
             if rel in allowed:
                 f = STATIC / rel
                 if f.exists() and f.is_file():
-                    data=f.read_bytes()
-                    ctype='image/svg+xml; charset=utf-8' if rel.endswith('.svg') else (mimetypes.guess_type(rel)[0] or 'application/octet-stream')
-                    self.send_response(200); self.send_header('Content-Type',ctype); self.send_header('Cache-Control','public, max-age=3600'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Length',str(len(data))); self.end_headers(); self.wfile.write(data); return
+                    data = f.read_bytes()
+                    ctype = 'image/svg+xml; charset=utf-8' if rel.endswith('.svg') else (mimetypes.guess_type(rel)[0] or 'application/octet-stream')
+                    self.send_response(200); self.send_header('Content-Type', ctype); self.send_header('Cache-Control', 'public, max-age=3600'); self.send_header('X-Content-Type-Options', 'nosniff'); self.send_header('Content-Length', str(len(data))); self.end_headers(); self.wfile.write(data); return
         return super().do_GET()
 
 if __name__ == '__main__':
