@@ -23,8 +23,6 @@ def portrait(name):
         return '/static/' + STANDALONE[name] + '?v=19'
     if name in SPRITE_POS:
         return '/portrait/' + name.lower() + '.svg?v=19'
-    if name == 'Malik' and (STATIC / 'malik.jpg').exists():
-        return '/static/malik.jpg?v=19'
     return _original_portrait(name)
 base.portrait = portrait
 
