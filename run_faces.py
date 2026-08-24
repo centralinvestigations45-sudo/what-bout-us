@@ -9,10 +9,10 @@ STATIC = Path(__file__).resolve().parent / 'static'
 
 STANDALONE = {
     'Simone': 'simone.jpg', 'Chloe': 'chloe.jpg', 'Darius': 'darius.jpg',
-    'Isabella': 'isabella.jpg', 'Julius': 'julius.jpg', 'Nia': 'nia.jpg',
+    'Isabella': 'isabella.jpg', 'Julius': 'julius.jpg', 'Malik': 'malik.jpg', 'Nia': 'nia.jpg',
 }
 SPRITE_NAMES = [
-    'Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Noah','Jack','Leo','Carter',
+    'Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Noah','Jack','Leo','Carter','Malik',
     'Lily','Aria','Mika','Zoey','Nova','Sophia','Ember','Hana','Riley','Vivien','Bella','Sahara','Skye'
 ]
 SPRITE_POS = {name: ((i % 5) * 64, (i // 5) * 64) for i, name in enumerate(SPRITE_NAMES)}
