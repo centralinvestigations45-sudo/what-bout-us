@@ -1,5 +1,5 @@
 from http.server import ThreadingHTTPServer
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 import os
 import run_faces
 
@@ -11,7 +11,8 @@ _original_companion_page = run_faces.base.companion_page
 
 def subscription_plans(name):
     safe_name = run_faces.base.esc(name)
-    return f'''<div class="card" style="margin-top:18px"><h2>Choose Your {safe_name} Plan</h2><p class="sub">Pick the option that works best for you.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px"><div class="plan"><h3>WHAT BOUT US™+</h3><div class="price" style="font-size:30px">$9.99 <small>/ month</small></div><a class="btn alt" href="/checkout?plan=plus">Choose $9.99</a></div><div class="plan hot"><h3>UNLIMITED</h3><div class="price" style="font-size:30px">$14.99 <small>/ month</small></div><a class="btn" href="/checkout?plan=unlimited">Choose $14.99</a></div><div class="plan"><h3>UNLIMITED YEARLY</h3><div class="price" style="font-size:30px">$149.99 <small>/ year</small></div><a class="btn alt" href="/checkout?plan=unlimited_yearly">Choose $149.99</a></div></div></div>'''
+    slug = quote(name, safe='')
+    return f'''<div class="card" style="margin-top:18px"><h2>Choose Your {safe_name} Plan</h2><p class="sub">Pick the option that works best for you.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px"><div class="plan"><h3>WHAT BOUT US™+</h3><div class="price" style="font-size:30px">$9.99 <small>/ month</small></div><a class="btn alt" href="/checkout?plan=plus&companion={slug}">Choose $9.99</a></div><div class="plan hot"><h3>UNLIMITED</h3><div class="price" style="font-size:30px">$14.99 <small>/ month</small></div><a class="btn" href="/checkout?plan=unlimited&companion={slug}">Choose $14.99</a></div><div class="plan"><h3>UNLIMITED YEARLY</h3><div class="price" style="font-size:30px">$149.99 <small>/ year</small></div><a class="btn alt" href="/checkout?plan=unlimited_yearly&companion={slug}">Choose $149.99</a></div></div></div>'''
 
 
 def account_access():
@@ -63,11 +64,28 @@ class Handler(run_faces.FacesHandler):
     def do_GET(self):
         u = urlparse(self.path)
         if u.path == '/checkout':
-            plan = parse_qs(u.query).get('plan', ['plus'])[0]
+            q = parse_qs(u.query)
+            plan = q.get('plan', ['plus'])[0]
+            companion = q.get('companion', [''])[0]
+
             if plan == 'unlimited_yearly':
                 target = os.environ.get('SQUARE_UNLIMITED_YEARLY_URL', '').strip()
                 if target:
                     self.send_response(302); self.send_header('Location', target); self.end_headers(); return
+
+            if plan == 'unlimited':
+                target = os.environ.get('SQUARE_UNLIMITED_URL', '').strip()
+                if target:
+                    self.send_response(302); self.send_header('Location', target); self.end_headers(); return
+
+            if plan == 'plus' and companion != 'Nia':
+                generic = os.environ.get('SQUARE_PLUS_GENERIC_URL', '').strip()
+                if generic:
+                    self.send_response(302); self.send_header('Location', generic); self.end_headers(); return
+                safe = run_faces.base.esc(companion or 'this companion')
+                body = f'''<main class="shell"><div class="card" style="max-width:700px;margin:40px auto"><h1>$9.99 Checkout</h1><p class="lead">We are correcting the $9.99 checkout for {safe} so you are not sent to Nia's payment page.</p><p class="sub">Please use the $14.99 monthly or $149.99 yearly option for now.</p><a class="btn" href="/checkout?plan=unlimited&companion={quote(companion, safe='')}">Choose $14.99/month</a> <a class="btn alt" href="/checkout?plan=unlimited_yearly&companion={quote(companion, safe='')}">Choose $149.99/year</a></div>{run_faces.base.footer()}</main>'''
+                return self.sh(run_faces.base.page('Checkout — What Bout Us™', body))
+
         return super().do_GET()
 
 
