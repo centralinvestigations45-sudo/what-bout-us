@@ -40,6 +40,15 @@ def companion_page_with_nia_test(name):
             '''if(N==="Simone")say(d.reply);if(N==="Nia"){try{let u=new SpeechSynthesisUtterance(d.reply),vs=speechSynthesis.getVoices(),v=vs.find(x=>/Samantha|Ava|Allison|Serena|female/i.test(x.name)&&/^en/i.test(x.lang))||vs.find(x=>/^en-US/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));if(v)u.voice=v;u.rate=.92;u.pitch=1.08;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}'''
         )
 
+    # Leave Simone completely unchanged. Add device voice to every other companion.
+    if name not in ('Simone', 'Nia'):
+        male_names = {'Alex','Damien','Logan','Jay','Kai','Mason','Ethan','Luca','Darius','Noah','Jack','Julius','Leo','Carter','Tyler'}
+        want_male = name in male_names
+        pitch = '.92' if want_male else '1.08'
+        voice_pattern = 'Daniel|Aaron|Fred|Alex|Tom|male' if want_male else 'Samantha|Ava|Allison|Serena|Victoria|female'
+        speech = f'''if(N==="Simone")say(d.reply);try{{let u=new SpeechSynthesisUtterance(d.reply),vs=speechSynthesis.getVoices().filter(x=>/^en/i.test(x.lang)),v=vs.find(x=>/{voice_pattern}/i.test(x.name))||vs.find(x=>/^en-US/i.test(x.lang))||vs[0];if(v)u.voice=v;u.rate=.92;u.pitch={pitch};speechSynthesis.cancel();speechSynthesis.speak(u)}}catch(e){{}}'''
+        html = html.replace('if(N==="Simone")say(d.reply);', speech)
+
     # Give every companion the same three payment choices.
     plans = subscription_plans(name)
     marker = '<div class="fine">© 2026 What Bout Us'
