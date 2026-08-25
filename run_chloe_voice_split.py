@@ -7,6 +7,18 @@ import run_chloe_fix as chloe
 
 base = chloe.base
 
+# Give Chloe a fresh, versioned 2-minute trial state without changing
+# Simone or the subscription rules for any other companion.
+_original_companion_page = base.companion_page
+
+def companion_page_chloe_unlock(name):
+    html = _original_companion_page(name)
+    if name == 'Chloe':
+        html = html.replace('wbu_guest_trial_20260825d_', 'wbu_guest_trial_20260825e_')
+    return html
+
+base.companion_page = companion_page_chloe_unlock
+
 class Handler(chloe.Handler):
     def do_POST(self):
         if urlparse(self.path).path != '/api/chloe-voice':
