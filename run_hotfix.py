@@ -63,6 +63,17 @@ def hotfix_companion_page(name):
     html = html.replace('N==="Simone"||N==="Chloe"', 'true')
     html = html.replace(' · paid subscription required', ' · 2-minute free voice trial')
 
+    # Temporary owner test access for Chloe so prior browser trial state cannot block testing.
+    if name == 'Chloe':
+        html = html.replace(
+            'function guestState(){let x=Number(localStorage.getItem(G)||0);if(!x)return 120;return Math.max(0,120-Math.floor((Date.now()-x)/1000))}',
+            'function guestState(){if(N==="Chloe")return 86400;let x=Number(localStorage.getItem(G)||0);if(!x)return 120;return Math.max(0,120-Math.floor((Date.now()-x)/1000))}'
+        )
+        html = html.replace('if(!started)timer(r)', 'if(!started&&N!=="Chloe")timer(r)')
+        html = html.replace(' · 2-minute free demo', ' · OWNER TEST UNLOCKED', 1)
+        html = html.replace('Free demo starts with your first message.', 'Owner test mode · no countdown', 1)
+        html = html.replace('Your free 2-minute conversation has ended. Subscribe to continue where you left off.', 'Owner test mode active for Chloe.', 1)
+
     # Make refund/cancellation and virtual-currency expiration terms visible on every companion page.
     policy = '''<div class="card" style="margin-top:18px"><h2>Subscription & Virtual Currency Policy</h2><p class="sub"><strong>14-Day Refund Policy:</strong> Refund requests must be submitted within 14 days of the initial subscription purchase. After 14 days, subscription payments are non-refundable, except for duplicate charges, verified billing errors, unauthorized transactions, service failures we caused, or where required by law. You may cancel at any time to stop future renewal charges. Cancellation does not provide a refund for the current billing period.</p><p class="sub"><strong>31-Day Virtual Currency Window:</strong> Each issuance of virtual currency is valid for 31 days from the date it is issued. Any unused virtual currency expires at the end of that 31-day window and does not carry over. All virtual currency purchases are final and non-refundable. Virtual currency has no cash value, is non-transferable, and is not redeemable for cash, except where required by law.</p></div>'''
     marker = '<div class="fine">© 2026 What Bout Us'
@@ -119,11 +130,11 @@ def hotfix_companion_page(name):
     if(status)status.textContent=NAME+' voice enabled';
   }}
   if(enable)enable.addEventListener('click',prime);
-  if(send)send.addEventListener('pointerdown',prime,{{passive:true}});
+  if(send)send.addEventListener('pointerdown',prime,{passive:true});
   if(replay)replay.addEventListener('click',()=>{{prime();last=latest()||last;if(last)speak(last);else if(status)status.textContent='Send '+NAME+' a message first.';}});
   if(history){{
     const obs=new MutationObserver(()=>{{const t=latest();if(t&&t!==last){{last=t;if(enabled)setTimeout(()=>speak(t),60);}}}});
-    obs.observe(history,{{childList:true,subtree:true}});
+    obs.observe(history,{childList:true,subtree:true});
   }}
 }})();
 </script>'''
