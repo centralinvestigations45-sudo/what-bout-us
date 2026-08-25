@@ -8,6 +8,7 @@ import run_chloe_voice_split as split
 base = split.base
 _original_companion_page = base.companion_page
 _voice_cache = {'at': 0, 'voices': []}
+_assignment_cache = {'signature': None, 'map': {}}
 
 
 def _available_voices():
@@ -25,6 +26,7 @@ def _available_voices():
         simone_id = os.environ.get('ELEVENLABS_VOICE_ID', '').strip()
         chloe_id = os.environ.get('CHLOE_ELEVENLABS_VOICE_ID', '').strip()
         voices = [v for v in voices if v.get('voice_id') and v.get('voice_id') not in {simone_id, chloe_id}]
+        voices.sort(key=lambda v: (str(v.get('name') or '').lower(), str(v.get('voice_id') or '')))
         _voice_cache['at'] = now
         _voice_cache['voices'] = voices
         return voices
@@ -45,21 +47,89 @@ def _gender(v):
     return ''
 
 
-def _voice_for(name):
+def _companions():
+    return [n for n in getattr(base, 'ALL', []) if n not in ('Simone', 'Chloe')]
+
+
+def _build_assignments():
     voices = _available_voices()
-    if not voices:
-        return None
+    companions = _companions()
+    signature = tuple((str(v.get('voice_id') or ''), str(v.get('name') or ''), _gender(v)) for v in voices)
+    if _assignment_cache['signature'] == signature and _assignment_cache['map']:
+        return _assignment_cache['map']
+
     male_names = set(getattr(base, 'MEN', []))
-    wanted = 'male' if name in male_names else 'female'
-    pool = [v for v in voices if _gender(v) == wanted]
-    if not pool:
-        pool = voices
-    companions = [n for n in getattr(base, 'ALL', []) if n not in ('Simone', 'Chloe')]
-    try:
-        idx = companions.index(name)
-    except ValueError:
-        idx = sum(ord(c) for c in name)
-    return pool[idx % len(pool)] if pool else None
+    remaining = list(voices)
+    result = {}
+
+    # First pass: unique gender-matched voice for every companion where possible.
+    for wanted in ('male', 'female'):
+        names = [n for n in companions if ('male' if n in male_names else 'female') == wanted]
+        matching = [v for v in remaining if _gender(v) == wanted]
+        neutral = [v for v in remaining if _gender(v) not in ('male', 'female')]
+        pool = matching + neutral
+        for name in names:
+            if not pool:
+                break
+            voice = pool.pop(0)
+            result[name] = voice
+            vid = voice.get('voice_id')
+            remaining = [v for v in remaining if v.get('voice_id') != vid]
+            pool = [v for v in pool if v.get('voice_id') != vid]
+
+    # Second pass: use any still-unused voice before ever repeating one.
+    for name in companions:
+        if name in result:
+            continue
+        if remaining:
+            voice = remaining.pop(0)
+            result[name] = voice
+
+    # Only if the ElevenLabs account has fewer than 30 eligible voices, provide a
+    # temporary natural-voice fallback rather than browser/synthetic speech.
+    # Verification reports this condition clearly so it cannot be mistaken for done.
+    if voices:
+        for i, name in enumerate(companions):
+            if name not in result:
+                result[name] = voices[i % len(voices)]
+
+    _assignment_cache['signature'] = signature
+    _assignment_cache['map'] = result
+    return result
+
+
+def _voice_for(name):
+    return _build_assignments().get(name)
+
+
+def _voice_roster():
+    voices = _available_voices()
+    assignments = _build_assignments()
+    companions = _companions()
+    rows = []
+    used = []
+    for name in companions:
+        v = assignments.get(name) or {}
+        vid = str(v.get('voice_id') or '')
+        if vid:
+            used.append(vid)
+        rows.append({
+            'companion': name,
+            'gender': 'male' if name in set(getattr(base, 'MEN', [])) else 'female',
+            'voice_name': str(v.get('name') or ''),
+            'voice_id_suffix': vid[-6:] if vid else '',
+            'voice_gender': _gender(v),
+            'assigned': bool(vid),
+        })
+    unique = len(set(used))
+    return {
+        'remaining_companions': len(companions),
+        'eligible_distinct_voices': len({str(v.get('voice_id')) for v in voices if v.get('voice_id')}),
+        'assigned': sum(1 for r in rows if r['assigned']),
+        'unique_assignments': unique,
+        'all_30_unique': len(companions) == 30 and unique == 30 and all(r['assigned'] for r in rows),
+        'rows': rows,
+    }
 
 
 def companion_page_with_voice_toggle(name):
@@ -132,6 +202,12 @@ base.companion_page = companion_page_with_voice_toggle
 
 
 class Handler(split.Handler):
+    def do_GET(self):
+        path = urlparse(self.path).path
+        if path == '/health/voices':
+            return self._json_fixed(200, _voice_roster())
+        return super().do_GET()
+
     def do_POST(self):
         path = urlparse(self.path).path
         if path != '/api/companion-voice':
