@@ -37,6 +37,12 @@ def hotfix_companion_page(name):
     html = html.replace('N==="Simone"||N==="Chloe"', 'true')
     html = html.replace(' · paid subscription required', ' · 2-minute free voice trial')
 
+    # Make refund/cancellation and virtual-currency expiration terms visible on every companion page.
+    policy = '''<div class="card" style="margin-top:18px"><h2>Subscription & Virtual Currency Policy</h2><p class="sub"><strong>14-Day Refund Policy:</strong> Refund requests must be submitted within 14 days of the initial subscription purchase. After 14 days, subscription payments are non-refundable, except for duplicate charges, verified billing errors, unauthorized transactions, service failures we caused, or where required by law. You may cancel at any time to stop future renewal charges. Cancellation does not provide a refund for the current billing period.</p><p class="sub"><strong>31-Day Virtual Currency Window:</strong> Each issuance of virtual currency is valid for 31 days from the date it is issued. Any unused virtual currency expires at the end of that 31-day window and does not carry over. Virtual currency has no cash value, is non-transferable, and is not refundable or redeemable for cash, except where required by law.</p></div>'''
+    marker = '<div class="fine">© 2026 What Bout Us'
+    if marker in html:
+        html = html.replace(marker, policy + marker, 1)
+
     # Simone already has the correct voice. Do not alter his audio controls or voice routing.
     if name == 'Simone':
         return html
@@ -52,7 +58,6 @@ def hotfix_companion_page(name):
         rate = '0.93'
 
     controls = f'''<div class="card" style="margin-top:18px"><h2>{base.esc(name)} Voice</h2><p class="sub">Your 2-minute trial includes voice. On iPhone, tap Enable Voice once, then talk normally.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button id="trial-voice-enable" type="button" class="btn">Enable Voice</button><button id="trial-voice-replay" type="button" class="btn alt">Replay Last Reply</button></div><div id="trial-voice-status" class="status" style="margin-top:10px">Voice ready</div></div>'''
-    marker = '<div class="fine">© 2026 What Bout Us'
     if marker in html:
         html = html.replace(marker, controls + marker, 1)
 
