@@ -1,9 +1,11 @@
 from http.server import ThreadingHTTPServer
+from urllib.parse import urlparse
 import run_luxury_catalog as lux
 
 base = lux.base
 wallet = lux.wallet
 pricing = lux.pricing
+app_v2 = lux.run_nia_test.app_v2
 
 # Production footwear hotfix: remove duplicate/logo-bearing cards and correct Work Boots price.
 SAFE_SHOES = [
@@ -19,11 +21,35 @@ for label, key, premium, price in SAFE_SHOES:
 
 # All 32 companions get the same 2-minute guest trial.
 # Simone's existing ElevenLabs voice path is intentionally left untouched.
-try:
-    app_v2 = lux.run_nia_test.app_v2
-    app_v2.FREE.update(base.ALL)
-except Exception:
-    pass
+app_v2.FREE.update(base.ALL)
+
+# Signup policy acknowledgement: users must actively confirm the refund and virtual-currency terms.
+POLICY_VERSION = '2026-08-25-v1'
+_original_account_page = app_v2.account_page
+
+def policy_account_page():
+    html = _original_account_page()
+    checkbox = '''<div class="card" style="margin:16px 0;padding:16px"><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input id="policy_accept" type="checkbox" style="width:20px;height:20px;margin-top:3px;flex:0 0 auto"><span><strong>I have read and agree to the What Bout Us™ Subscription & Virtual Currency Policy.</strong><br><span class="sub">I understand subscription refund requests must be made within 14 days of the initial subscription purchase. I also understand all virtual currency purchases are final and non-refundable, each issuance expires 31 days after it is issued, unused virtual currency does not carry over, and virtual currency has no cash value, except where required by law.</span></span></label></div>'''
+    html = html.replace('<button class="btn" onclick="go(\'signup\')">Create Free Account</button>', checkbox + '<button class="btn" onclick="go(\'signup\')">Create Free Account</button>', 1)
+    override = '''<script>
+window.go=async function(k){
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  const name=document.getElementById("name").value.trim();
+  const box=document.getElementById("policy_accept");
+  if(k==="signup" && (!box || !box.checked)){
+    return m("You must read and check the policy agreement before creating your account.");
+  }
+  const r=await fetch("/api/auth/"+k,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password,display_name:name,accepted_policy:k!=="signup"||!!(box&&box.checked),policy_version:"2026-08-25-v1"})});
+  const d=await r.json();
+  if(!r.ok)return m(d.error||"Unable to continue.");
+  if(d.access_token){localStorage.setItem("wbu_access_token",d.access_token);m("Signed in. You can return to your companion.")}
+  else m("Account created. Check your email if confirmation is required, then sign in.");
+};
+</script>'''
+    return html.replace('</body>', override + '</body>', 1)
+
+app_v2.account_page = policy_account_page
 
 _original_companion_page = base.companion_page
 
@@ -38,7 +64,7 @@ def hotfix_companion_page(name):
     html = html.replace(' · paid subscription required', ' · 2-minute free voice trial')
 
     # Make refund/cancellation and virtual-currency expiration terms visible on every companion page.
-    policy = '''<div class="card" style="margin-top:18px"><h2>Subscription & Virtual Currency Policy</h2><p class="sub"><strong>14-Day Refund Policy:</strong> Refund requests must be submitted within 14 days of the initial subscription purchase. After 14 days, subscription payments are non-refundable, except for duplicate charges, verified billing errors, unauthorized transactions, service failures we caused, or where required by law. You may cancel at any time to stop future renewal charges. Cancellation does not provide a refund for the current billing period.</p><p class="sub"><strong>31-Day Virtual Currency Window:</strong> Each issuance of virtual currency is valid for 31 days from the date it is issued. Any unused virtual currency expires at the end of that 31-day window and does not carry over. Virtual currency has no cash value, is non-transferable, and is not refundable or redeemable for cash, except where required by law.</p></div>'''
+    policy = '''<div class="card" style="margin-top:18px"><h2>Subscription & Virtual Currency Policy</h2><p class="sub"><strong>14-Day Refund Policy:</strong> Refund requests must be submitted within 14 days of the initial subscription purchase. After 14 days, subscription payments are non-refundable, except for duplicate charges, verified billing errors, unauthorized transactions, service failures we caused, or where required by law. You may cancel at any time to stop future renewal charges. Cancellation does not provide a refund for the current billing period.</p><p class="sub"><strong>31-Day Virtual Currency Window:</strong> Each issuance of virtual currency is valid for 31 days from the date it is issued. Any unused virtual currency expires at the end of that 31-day window and does not carry over. All virtual currency purchases are final and non-refundable. Virtual currency has no cash value, is non-transferable, and is not redeemable for cash, except where required by law.</p></div>'''
     marker = '<div class="fine">© 2026 What Bout Us'
     if marker in html:
         html = html.replace(marker, policy + marker, 1)
@@ -106,7 +132,33 @@ def hotfix_companion_page(name):
 base.companion_page = hotfix_companion_page
 
 class Handler(lux.Handler):
-    pass
+    def do_POST(self):
+        p = urlparse(self.path).path
+        if p == '/api/auth/signup':
+            d = self.body_json()
+            if d.get('accepted_policy') is not True:
+                return self.sj({'error':'You must read and agree to the Subscription & Virtual Currency Policy before creating an account.'}, 400)
+            email = str(d.get('email','')).strip()
+            password = str(d.get('password',''))
+            name = str(d.get('display_name','')).strip()
+            if not email or len(password) < 6:
+                return self.sj({'error':'Use a valid email and a password of at least 6 characters.'}, 400)
+            body = {
+                'email': email,
+                'password': password,
+                'data': {
+                    'display_name': name,
+                    'policy_accepted': True,
+                    'policy_version': POLICY_VERSION,
+                    'policy_accepted_at': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
+                }
+            }
+            s, o = app_v2.sb('/auth/v1/signup', method='POST', body=body)
+            if s not in (200, 201):
+                err = (o.get('msg') or o.get('message') or 'Authentication failed.') if isinstance(o, dict) else 'Authentication failed.'
+                return self.sj({'error':err}, s)
+            return self.sj(o)
+        return super().do_POST()
 
 if __name__ == '__main__':
     ThreadingHTTPServer(('0.0.0.0', base.PORT), Handler).serve_forever()
