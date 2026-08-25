@@ -5,9 +5,10 @@ from urllib.error import HTTPError, URLError
 import json, os
 import run_voice_controls as vc
 
-# Seven distinct OpenAI speech voices complete the 30-companion roster without
-# reusing ElevenLabs voices or consuming additional ElevenLabs voice slots.
+# Natural OpenAI speech voices supplement the ElevenLabs roster where the
+# available ElevenLabs pool cannot guarantee a gender-matched unique voice.
 OPENAI_VOICES = {
+    'Alex': ('onyx', 'Natural adult man. Warm, confident, relaxed, and conversational. Clearly masculine voice, natural pacing, no robotic cadence or announcer tone.'),
     'Hana': ('coral', 'Warm, natural adult woman. Friendly and conversational, with relaxed pacing and no announcer tone.'),
     'Riley': ('nova', 'Bright, natural adult woman. Easygoing, expressive, and conversational. Avoid robotic cadence.'),
     'Vivien': ('shimmer', 'Elegant, warm adult woman. Smooth, confident, natural pacing with subtle emotion.'),
@@ -15,6 +16,7 @@ OPENAI_VOICES = {
     'Sahara': ('ballad', 'Rich, expressive adult woman. Warm and distinctive, with natural pauses and conversational rhythm.'),
     'Skye': ('marin', 'Modern, confident adult woman. Clear, personable, relaxed, and naturally expressive.'),
     'Nia': ('alloy', 'Warm adult woman with a polished but casual conversational delivery. Natural pacing, never robotic.'),
+    'Ember': ('verse', 'Natural adult woman. Warm, expressive, personable, and clearly feminine in presentation, with relaxed conversational pacing and no robotic cadence.'),
 }
 
 
@@ -59,7 +61,7 @@ def hybrid_roster():
             row['provider'] = 'openai'
             row['voice_name'] = voice
             row['voice_id_suffix'] = voice
-            row['voice_gender'] = 'female'
+            row['voice_gender'] = 'male' if name == 'Alex' else 'female'
             row['assigned'] = True
             identities.append('openai:' + voice)
         else:
@@ -67,11 +69,13 @@ def hybrid_roster():
             identities.append('elevenlabs:' + str(row.get('voice_id_suffix') or row.get('voice_name') or name))
         rows.append(row)
     unique = len(set(identities))
+    gender_ok = all((r.get('gender') == r.get('voice_gender')) for r in rows)
     return {
         'remaining_companions': len(rows),
         'assigned': sum(1 for r in rows if r.get('assigned')),
         'unique_assignments': unique,
         'all_30_unique': len(rows) == 30 and unique == 30 and all(r.get('assigned') for r in rows),
+        'all_gender_matched': gender_ok,
         'openai_voice_count': len(OPENAI_VOICES),
         'elevenlabs_distinct_available': base_roster.get('eligible_distinct_voices', 0),
         'rows': rows,
@@ -91,9 +95,6 @@ class Handler(vc.Handler):
         name = str(d.get('companion') or '').strip()
         text = str(d.get('text') or '').strip()
         if name not in OPENAI_VOICES:
-            # Re-run the parent handler with the body preserved by dispatching
-            # directly to the ElevenLabs path implementation.
-            # body_json() consumed the request stream, so reproduce that logic here.
             if name in ('Simone', 'Chloe') or name not in getattr(vc.base, 'ALL', []):
                 return self._json_fixed(400, {'error':'This companion uses a separate voice path.'})
             if not text:
@@ -140,8 +141,6 @@ class Handler(vc.Handler):
 
 
 if __name__ == '__main__':
-    # Tiny startup probes verify each of the seven added voices is actually accepted
-    # by the configured OpenAI account before the service is considered voice-ready.
     probe = {}
     for name in OPENAI_VOICES:
         try:
