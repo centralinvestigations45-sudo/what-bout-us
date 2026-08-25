@@ -21,6 +21,7 @@ COPY run_chloe_fix.py /app/run_chloe_fix.py
 COPY run_chloe_voice_split.py /app/run_chloe_voice_split.py
 COPY run_voice_controls.py /app/run_voice_controls.py
 COPY run_voice_verified.py /app/run_voice_verified.py
+COPY run_voice_hybrid.py /app/run_voice_hybrid.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_voice_verified.py"]
+CMD ["python", "run_voice_hybrid.py"]
