@@ -1,14 +1,35 @@
 from http.server import ThreadingHTTPServer
 from urllib.parse import urlparse
 import json
+import re
 import run_voice_hybrid as hybrid
 
 base = hybrid.vc.base
 _original_companion_page = base.companion_page
 
+# Fresh versioned browser trial state so stale/consumed localStorage keys cannot
+# leave the production conversation UI permanently locked after a deploy.
+TRIAL_KEY = 'wbu_guest_trial_20260825_unlock2_'
+
+
+def _fix_trial_access(html):
+    # Normalize any older/versioned guest trial key to the current production key.
+    html = re.sub(r'G="wbu_guest_trial_[^"]*"\+N', f'G="{TRIAL_KEY}"+N', html)
+    html = html.replace('G="wbu_guest_trial_"+N', f'G="{TRIAL_KEY}"+N')
+
+    # Every companion gets the same two-minute guest test. Paid access rules still
+    # take over after that timer expires; this only fixes initial test access.
+    html = html.replace('N==="Simone"||N==="Chloe"||N==="Nia"', 'true')
+    html = html.replace('N==="Simone"||N==="Chloe"', 'true')
+    html = html.replace(' · paid subscription required', ' · 2-minute free voice trial')
+    return html
+
 
 def companion_page_server_audio_only(name):
-    html = _original_companion_page(name)
+    html = _fix_trial_access(_original_companion_page(name))
+
+    # Simone and Chloe keep their dedicated voice paths, but receive the same
+    # refreshed two-minute conversation test state as the rest of the roster.
     if name in ('Simone', 'Chloe'):
         return html
 
@@ -103,6 +124,6 @@ class Handler(hybrid.Handler):
 
 
 if __name__ == '__main__':
-    print('WBU_LIVE_VOICE_FIX server-audio-only enabled for 30 companions', flush=True)
+    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only enabled', flush=True)
     print('WBU_LIVE_VOICE_ROSTER ' + json.dumps(hybrid.hybrid_roster(), separators=(',', ':')), flush=True)
     ThreadingHTTPServer(('0.0.0.0', base.PORT), Handler).serve_forever()
