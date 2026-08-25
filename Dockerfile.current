@@ -18,6 +18,7 @@ COPY run_luxury_catalog.py /app/run_luxury_catalog.py
 COPY run_hotfix.py /app/run_hotfix.py
 COPY run_signup_fix.py /app/run_signup_fix.py
 COPY run_chloe_fix.py /app/run_chloe_fix.py
+COPY run_chloe_voice_split.py /app/run_chloe_voice_split.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_chloe_fix.py"]
+CMD ["python", "run_chloe_voice_split.py"]
