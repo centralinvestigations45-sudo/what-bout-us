@@ -6,10 +6,22 @@ import run_voice_hybrid as hybrid
 
 base = hybrid.vc.base
 _original_companion_page = base.companion_page
+_original_footer = base.footer
 
 # Fresh versioned browser trial state so stale/consumed localStorage keys cannot
 # leave the production conversation UI permanently locked after a deploy.
 TRIAL_KEY = 'wbu_guest_trial_20260825_unlock2_'
+
+
+def footer_with_support_email():
+    html = _original_footer()
+    if 'support@whatboutus.com' in html:
+        return html
+    support = '<div class="fine" style="margin-top:8px">Support: <a href="mailto:support@whatboutus.com">support@whatboutus.com</a></div>'
+    return support + html
+
+
+base.footer = footer_with_support_email
 
 
 def _fix_trial_access(html):
@@ -27,6 +39,16 @@ def _fix_trial_access(html):
 
 def companion_page_server_audio_only(name):
     html = _fix_trial_access(_original_companion_page(name))
+
+    # Ensure the support email is visible on companion pages whose footer HTML
+    # may have been rendered before the footer wrapper above was installed.
+    if 'support@whatboutus.com' not in html:
+        marker = '<div class="fine">© 2026 What Bout Us'
+        support = '<div class="fine" style="margin-top:8px">Support: <a href="mailto:support@whatboutus.com">support@whatboutus.com</a></div>'
+        if marker in html:
+            html = html.replace(marker, support + marker, 1)
+        else:
+            html = html.replace('</main>', support + '</main>', 1)
 
     # Simone and Chloe keep their dedicated voice paths, but receive the same
     # refreshed two-minute conversation test state as the rest of the roster.
@@ -124,6 +146,6 @@ class Handler(hybrid.Handler):
 
 
 if __name__ == '__main__':
-    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only enabled', flush=True)
+    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only + support-email enabled', flush=True)
     print('WBU_LIVE_VOICE_ROSTER ' + json.dumps(hybrid.hybrid_roster(), separators=(',', ':')), flush=True)
     ThreadingHTTPServer(('0.0.0.0', base.PORT), Handler).serve_forever()
