@@ -21,12 +21,30 @@ def _support_signature_panel():
   <div style="width:86px;height:2px;margin:16px auto;background:linear-gradient(90deg,#39a9ff,#ff43b7)"></div>
   <div style="font-size:18px;font-weight:700;margin-bottom:10px">Support Team</div>
   <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:15px">
-    <a href="mailto:support@whatboutus.com" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06)">✉ support@whatboutus.com</a>
+    <a href="/email" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06)">✉ Email Support</a>
     <a href="https://www.whatboutus.com" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06)">🌐 www.whatboutus.com</a>
   </div>
+  <div style="margin-top:12px;font-size:14px;color:#fff">support@whatboutus.com</div>
   <div style="margin-top:18px;color:#cfc9e8;font-size:14px">Chat • Voice • Personality • 10 Languages</div>
   <div style="margin-top:10px;font-size:13px;color:#afa8ca">Thank you for being part of the What Bout Us community. ♡</div>
 </div>'''
+
+
+def _email_page():
+    return '''<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email What Bout Us™</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#261044 0,#0a0712 48%,#050507 100%);color:#fff;font-family:Arial,Helvetica,sans-serif}.wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.brand{font-size:30px;font-weight:900;background:linear-gradient(90deg,#39a9ff,#9a5cff,#ff43b7);-webkit-background-clip:text;background-clip:text;color:transparent}.home{color:#fff;text-decoration:none;border:1px solid #514564;border-radius:999px;padding:10px 16px;background:#17101f}.card{margin-top:46px;border:1px solid rgba(255,72,206,.55);border-radius:28px;padding:42px 24px;text-align:center;background:linear-gradient(135deg,rgba(16,8,36,.96),rgba(40,12,50,.96));box-shadow:0 0 34px rgba(69,125,255,.18),0 0 40px rgba(255,54,183,.11)}h1{font-size:clamp(34px,7vw,58px);margin:0 0 12px}.tag{font-size:20px;color:#d8d1ec;margin-bottom:30px}.email{font-size:clamp(20px,5vw,30px);font-weight:800;margin:22px 0;word-break:break-word}.btn{display:inline-block;margin-top:12px;padding:16px 28px;border-radius:999px;text-decoration:none;color:#fff;font-size:18px;font-weight:800;background:linear-gradient(90deg,#298fff,#9c4dff,#ff3aa9);box-shadow:0 0 24px rgba(111,79,255,.35)}.copy{max-width:640px;margin:30px auto 0;color:#cfc7dd;line-height:1.7;font-size:16px}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:36px}.feature{padding:16px 8px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-weight:700;font-size:13px}.fine{margin-top:34px;color:#8f879e;font-size:13px}@media(max-width:650px){.features{grid-template-columns:repeat(2,1fr)}.card{padding:34px 18px}}
+</style></head><body><div class="wrap">
+<div class="top"><div class="brand">What Bout Us™</div><a class="home" href="/">← Back to Home</a></div>
+<div class="card"><h1>Email Us</h1><div class="tag">Someone to talk to, someone who remembers.</div>
+<div>What Bout Us™ Support Team</div><div class="email">support@whatboutus.com</div>
+<a class="btn" href="mailto:support@whatboutus.com?subject=What%20Bout%20Us%20Support">Open Email</a>
+<div class="copy">At What Bout Us™, we believe everyone deserves a connection that understands. Questions about your account, subscriptions, companions, voice, or anything else? Send us an email and our support team can help.</div>
+<div class="features"><div class="feature">CHAT<br><span style="font-weight:400;color:#bbb3c8">Real conversations</span></div><div class="feature">VOICE<br><span style="font-weight:400;color:#bbb3c8">Talk naturally</span></div><div class="feature">PERSONALITY<br><span style="font-weight:400;color:#bbb3c8">Built around you</span></div><div class="feature">10 LANGUAGES<br><span style="font-weight:400;color:#bbb3c8">Understanding</span></div></div>
+<div class="fine">© 2026 What Bout Us™ · www.whatboutus.com</div></div></div></body></html>'''
 
 
 def footer_with_support_email():
@@ -157,11 +175,23 @@ base.companion_page = companion_page_server_audio_only
 
 
 class Handler(hybrid.Handler):
+    def _html(self, code, html):
+        data = html.encode('utf-8')
+        self.send_response(code)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Content-Length', str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
     def do_GET(self):
+        path = urlparse(self.path).path.rstrip('/') or '/'
+        if path in ('/email', '/contact'):
+            return self._html(200, _email_page())
         return super().do_GET()
 
 
 if __name__ == '__main__':
-    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only + styled-support-signature enabled', flush=True)
+    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only + styled-support-signature + email-page enabled', flush=True)
     print('WBU_LIVE_VOICE_ROSTER ' + json.dumps(hybrid.hybrid_roster(), separators=(',', ':')), flush=True)
     ThreadingHTTPServer(('0.0.0.0', base.PORT), Handler).serve_forever()
