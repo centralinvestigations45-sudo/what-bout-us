@@ -13,12 +13,28 @@ _original_footer = base.footer
 TRIAL_KEY = 'wbu_guest_trial_20260825_unlock2_'
 
 
+def _support_signature_panel():
+    return '''
+<div style="max-width:920px;margin:28px auto 18px;padding:26px;border-radius:22px;background:linear-gradient(135deg,#09051a 0%,#17103b 48%,#330822 100%);border:1px solid rgba(255,72,206,.65);box-shadow:0 0 28px rgba(54,124,255,.18),0 0 34px rgba(255,41,181,.12);color:#fff;text-align:center">
+  <div style="font-size:28px;font-weight:800;letter-spacing:.4px;background:linear-gradient(90deg,#39a9ff,#9a5cff,#ff43b7);-webkit-background-clip:text;background-clip:text;color:transparent">What Bout Us™</div>
+  <div style="margin-top:7px;font-size:16px;font-style:italic;color:#d9d4ff">Someone to talk to, someone who remembers.</div>
+  <div style="width:86px;height:2px;margin:16px auto;background:linear-gradient(90deg,#39a9ff,#ff43b7)"></div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:10px">Support Team</div>
+  <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:15px">
+    <a href="mailto:support@whatboutus.com" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06)">✉ support@whatboutus.com</a>
+    <a href="https://www.whatboutus.com" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06)">🌐 www.whatboutus.com</a>
+  </div>
+  <div style="margin-top:18px;color:#cfc9e8;font-size:14px">Chat • Voice • Personality • 10 Languages</div>
+  <div style="margin-top:10px;font-size:13px;color:#afa8ca">Thank you for being part of the What Bout Us community. ♡</div>
+</div>'''
+
+
 def footer_with_support_email():
     html = _original_footer()
-    if 'support@whatboutus.com' in html:
+    if 'wbu-support-signature' in html:
         return html
-    support = '<div class="fine" style="margin-top:8px">Support: <a href="mailto:support@whatboutus.com">support@whatboutus.com</a></div>'
-    return support + html
+    panel = _support_signature_panel().replace('<div style="max-width:920px', '<div id="wbu-support-signature" style="max-width:920px', 1)
+    return panel + html
 
 
 base.footer = footer_with_support_email
@@ -40,15 +56,15 @@ def _fix_trial_access(html):
 def companion_page_server_audio_only(name):
     html = _fix_trial_access(_original_companion_page(name))
 
-    # Ensure the support email is visible on companion pages whose footer HTML
-    # may have been rendered before the footer wrapper above was installed.
-    if 'support@whatboutus.com' not in html:
+    # Ensure the styled support signature is visible on companion pages whose
+    # footer HTML may have been rendered before the footer wrapper was installed.
+    if 'wbu-support-signature' not in html:
         marker = '<div class="fine">© 2026 What Bout Us'
-        support = '<div class="fine" style="margin-top:8px">Support: <a href="mailto:support@whatboutus.com">support@whatboutus.com</a></div>'
+        panel = _support_signature_panel().replace('<div style="max-width:920px', '<div id="wbu-support-signature" style="max-width:920px', 1)
         if marker in html:
-            html = html.replace(marker, support + marker, 1)
+            html = html.replace(marker, panel + marker, 1)
         else:
-            html = html.replace('</main>', support + '</main>', 1)
+            html = html.replace('</main>', panel + '</main>', 1)
 
     # Simone and Chloe keep their dedicated voice paths, but receive the same
     # refreshed two-minute conversation test state as the rest of the roster.
@@ -146,6 +162,6 @@ class Handler(hybrid.Handler):
 
 
 if __name__ == '__main__':
-    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only + support-email enabled', flush=True)
+    print('WBU_LIVE_VOICE_FIX conversation-unlock2 + server-audio-only + styled-support-signature enabled', flush=True)
     print('WBU_LIVE_VOICE_ROSTER ' + json.dumps(hybrid.hybrid_roster(), separators=(',', ':')), flush=True)
     ThreadingHTTPServer(('0.0.0.0', base.PORT), Handler).serve_forever()
