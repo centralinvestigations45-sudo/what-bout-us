@@ -29,7 +29,7 @@ def _founders_section():
       <div class="card" style="padding:16px"><b>Founder Recognition</b><div class="sub">A permanent badge that distinguishes the original community.</div></div>
     </div>
 
-    <div style="text-align:center"><div style="font-size:42px;font-weight:900">$250</div><div class="sub" style="margin:4px 0 16px">Founding Membership</div><a class="btn" href="/account" style="font-size:18px;padding:15px 28px">Create Account to Join</a><div style="margin-top:12px;color:#8f887b;font-size:11px">The Founders Black Card is a virtual membership credential, not a bank, credit, debit, Visa, Mastercard, or other payment card.</div></div>
+    <div style="text-align:center"><div style="font-size:42px;font-weight:900">$250</div><div class="sub" style="margin:4px 0 8px">Founding Membership</div><div style="display:inline-block;margin:0 0 16px;padding:9px 14px;border:1px solid #8f7137;border-radius:999px;color:#e5c77d;font-weight:900;font-size:12px;letter-spacing:1.3px">ALL SALES FINAL · NON-REFUNDABLE</div><br><a class="btn" href="/account" style="font-size:18px;padding:15px 28px">Create Account to Join</a><div style="max-width:760px;margin:14px auto 0;color:#aaa18f;font-size:11px;line-height:1.5">The $250 What Bout Us™ Founders Club membership and virtual Black Card are non-refundable once purchased. The Founders Black Card is a virtual membership credential, not a bank, credit, debit, Visa, Mastercard, or other payment card.</div></div>
   </div>
 </section>'''
 
