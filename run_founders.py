@@ -37,6 +37,18 @@ def _founders_section():
 def founders_home():
     html = _original_home()
     section = _founders_section()
+
+    # Place the Founders Black Card immediately after the homepage
+    # Clothing, Shoes & Accessories collection section.
+    collection_anchor = 'WHAT BOUT US™ COLLECTION 01'
+    anchor_pos = html.find(collection_anchor)
+    if anchor_pos != -1:
+        section_end = html.find('</section>', anchor_pos)
+        if section_end != -1:
+            insert_at = section_end + len('</section>')
+            return html[:insert_at] + section + html[insert_at:]
+
+    # Safe fallback if the collection markup changes later.
     marker = '<main class="shell">'
     if marker in html:
         return html.replace(marker, marker + section, 1)
