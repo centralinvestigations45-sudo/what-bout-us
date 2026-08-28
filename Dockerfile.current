@@ -23,6 +23,7 @@ COPY run_voice_controls.py /app/run_voice_controls.py
 COPY run_voice_verified.py /app/run_voice_verified.py
 COPY run_voice_hybrid.py /app/run_voice_hybrid.py
 COPY run_voice_livefix.py /app/run_voice_livefix.py
+COPY run_founders.py /app/run_founders.py
 COPY static /app/static
 EXPOSE 8080
-CMD ["python", "run_voice_livefix.py"]
+CMD ["python", "run_founders.py"]
