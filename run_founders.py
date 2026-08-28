@@ -18,7 +18,7 @@ def _founders_section():
       <div style="position:relative;text-align:center;font-family:Georgia,serif;font-size:clamp(24px,5vw,48px);letter-spacing:4px">WHAT BOUT US</div>
       <div style="position:relative;text-align:center;font-size:clamp(10px,2vw,17px);letter-spacing:6px;margin-top:5px">FOUNDERS CLUB</div>
       <div style="position:relative;width:17%;aspect-ratio:1.25;border-radius:12px;background:linear-gradient(135deg,#f1d995,#9a762f);margin-top:5%;box-shadow:inset 0 0 0 2px rgba(0,0,0,.28)"></div>
-      <div style="position:relative;font-family:monospace;font-size:clamp(18px,4vw,36px);letter-spacing:3px;margin-top:5%;white-space:nowrap">7249&nbsp; 6187&nbsp; 3521&nbsp; 7903</div>
+      <div style="position:relative;width:100%;box-sizing:border-box;font-family:monospace;font-size:clamp(13px,4.2vw,36px);letter-spacing:clamp(0px,.35vw,3px);margin-top:5%;display:flex;justify-content:space-between;gap:1%;white-space:nowrap"><span>7249</span><span>6187</span><span>3521</span><span>7903</span></div>
       <div style="position:relative;display:flex;gap:8%;align-items:flex-end;margin-top:4%;font-size:clamp(9px,1.5vw,14px);letter-spacing:2px"><span>FOUNDING MEMBER</span><span>1-YEAR UNLIMITED ACCESS</span></div>
       <div style="position:absolute;right:6%;bottom:8%;width:13%;aspect-ratio:1;border:1px solid #c6a458;transform:rotate(30deg);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(-30deg);font-family:Georgia,serif;font-size:clamp(18px,4vw,36px)">WB</span></div>
     </div>
